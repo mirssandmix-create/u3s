@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!-- แอพมือถือ งานนอก: ฝังหน้างานนอกชุดเดียวกับโปรแกรมร้าน (ngannok.html) แล้วทำหน้าที่แทนตัวโปรแกรม
+     api(path, body) → ShopAndroid.call (Kotlin เก็บในเครื่อง + ส่งขึ้นเว็บเบื้องหลัง) · ลิงก์ออกนอกแอพ → แอพของมือถือ -->
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>html,body{margin:0;height:100%;background:#f3f4f6;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}</style>
+</head><body>
+<iframe id="f" src="ngannok.html"></iframe>
+<script>
+"use strict";
+const F=document.getElementById('f');
+/* คุยกับตัวแอพ: ตอบกลับทาง __apiDone(รหัส, ข้อความ JSON) · ok:false = โยนข้อผิดพลาดพร้อม data (แบบ api() ของโปรแกรมร้าน) */
+const CB={};let N=0;
+window.__apiDone=(id,txt)=>{const c=CB[id];delete CB[id];if(c)c(txt)};
+window.api=function(path,body){return new Promise((res,rej)=>{
+ const id=++N;
+ CB[id]=txt=>{let j=null;try{j=JSON.parse(txt)}catch(e){}
+  if(!j||typeof j!=='object'){rej(new Error('แอพตอบกลับผิดรูปแบบ'));return}
+  if(j.ok===false){const e=new Error(j.error||'เกิดข้อผิดพลาด');e.conflict=j.conflict===true;e.data=j;rej(e);return}
+  res(j)};
+ try{ShopAndroid.call(id,String(path),body===undefined?null:JSON.stringify(body))}catch(e){delete CB[id];rej(new Error('ติดต่อตัวแอพไม่ได้'))}
+})};
+const W=()=>F.contentWindow;
+const on=id=>{const e=W().document.getElementById(id);return !!(e&&e.classList.contains('on'))};
+/* ปุ่มย้อนกลับของมือถือ: ปิดหน้าต่างบนสุดก่อน (ถามยืนยัน → กล่องแจ้ง → ดูรูป → หน้าต่างงาน) · true = ปิดแล้ว */
+window.appBack=function(){try{const w=W();
+ if(on('busy'))return true;
+ if(on('cf')){w.cfNo();return true}
+ if(on('al')){w.document.getElementById('al').classList.remove('on');return true}
+ if(on('zm')){w.document.getElementById('zm').classList.remove('on');return true}
+ if(on('m')){const sh=w.document.getElementById('sh');
+  // หน้าต่างที่มีช่องกรอก: ถามก่อนปิด (แบบกดนอกกรอบ)
+  if(sh&&sh.querySelector('input:not([type=file]),textarea,select')){w.document.getElementById('m').dispatchEvent(new w.MouseEvent('mousedown',{bubbles:true}));w.document.getElementById('m').click();return true}
+  w.close_();return true}
+}catch(e){}return false};
+/* หน้าว่างพอจะโหลดหน้าแอพรุ่นใหม่ (WebUpdate · ตัวแอพเรียกตอนกลับเข้าแอพ) — ไม่มีหน้าต่างเปิด/ไม่ได้พิมพ์อยู่ · false = รอเปิดแอพครั้งหน้า */
+window.appIdle=function(){try{const d=W().document;return !on('busy')&&!on('cf')&&!on('al')&&!on('zm')&&!on('m')&&!/INPUT|TEXTAREA|SELECT/.test((d.activeElement||{}).tagName||'')}catch(e){return false}};
+/* ข้อมูลในเครื่องเปลี่ยน (ดึงจากเว็บมาใหม่ / กลับเข้าแอพ) → ให้หน้างานนอกโหลดใหม่ (ไม่ทับตอนกำลังบันทึก) */
+window.appChanged=function(){try{W().eval('if(typeof load==="function"&&!BUSY)load(true)')}catch(e){}};
+/* กดแจ้งเตือน → เปิดรายละเอียดงาน (รอจนหน้าโหลดงานเสร็จ ไม่เกิน 20 วิ) */
+window.appOpenJob=function(id){let n=0;const t=setInterval(()=>{n++;let done=false;
+ try{done=W().eval('typeof detail==="function"&&!!J['+JSON.stringify(id)+']&&(close_(),detail('+JSON.stringify(id)+'),true)')}catch(e){}
+ if(done||n>40)clearInterval(t)},500)};
+F.addEventListener('load',()=>{const w=W();try{
+ // ลิงก์ออกนอกแอพ (โทร / แผนที่ / Google ปฏิทิน / LINE) → เปิดด้วยแอพของมือถือ
+ w.open=u=>{try{if(u)ShopAndroid.open(String(new w.URL(u,w.location.href)))}catch(e){}return null};
+ w.document.addEventListener('click',e=>{const a=e.target&&e.target.closest&&e.target.closest('a[href]');if(!a)return;
+  let u;try{u=new URL(a.href)}catch(x){return}
+  if(u.host===location.host||!/^(https?|tel|mailto|line|geo):$/.test(u.protocol))return;
+  e.preventDefault();ShopAndroid.open(u.href)},true);
+}catch(e){}try{ShopAndroid.ready()}catch(e){}});
+</script>
+</body></html>

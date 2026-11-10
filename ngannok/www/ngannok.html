@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<!-- ShopPOS — งานนอก (หน้าเดียวกับเว็บงานนอก build ngannok-20261002-13 · เปลี่ยนแค่ส่วนเชื่อมต่อ: เก็บในเครื่อง + ส่งขึ้นเว็บเบื้องหลัง) -->
+<html lang="th"><head><base target="_blank"><meta charset="utf-8"><script>window.onerror=function(m,s,l,c){try{var p=document.createElement('pre');p.style.cssText='color:#fff;background:#b91c1c;padding:8px;white-space:pre-wrap;position:fixed;bottom:0;left:0;right:0;z-index:99;margin:0';p.textContent='เกิดข้อผิดพลาด: '+m+' (บรรทัด '+l+':'+c+')';(document.body||document.documentElement).appendChild(p)}catch(e){}};</script>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--tx:#111827;--mu:#6b7280;--bd:#e5e7eb;--pr:#16a34a;--b:#2563eb;--r:#dc2626;--p:#7c3aed;--o:#ea580c;--am:#ca8a04}
+*{box-sizing:border-box}body{margin:0;font-family:Prompt,sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+header{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#14532d;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5;gap:8px;border-bottom:1px solid #e5e7eb;box-shadow:0 2px 10px #0000000f}
+header h1{font-size:17px;margin:0}#who{opacity:.9;cursor:pointer;font-size:12px;text-decoration:underline dotted}
+.btn{border:0;border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer;background:#e5e7eb;color:var(--tx)}
+.btn.g{background:var(--pr);color:#fff}.btn.w{background:#14532d;color:#fff;font-weight:600}.btn.o{background:#fff;border:1px solid var(--bd)}.btn.r{background:#fee2e2;color:#991b1b}
+.btn.sm{padding:5px 9px;font-size:13px}.btn:disabled{opacity:.5}
+.wrap{max-width:960px;margin:auto;padding:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st{background:var(--card);border-radius:12px;padding:10px;text-align:center;border-top:4px solid var(--c)}
+.st b{font-size:22px;display:block}.st span{color:var(--mu);font-size:12px}
+.search{width:100%;margin-top:12px}
+.tabs{display:flex;gap:6px;margin:10px 0 4px;overflow-x:auto}
+.tab{padding:7px 14px;border-radius:20px;background:#fff;border:1px solid var(--bd);white-space:nowrap;cursor:pointer}
+.tab.on{background:#14532d;color:#fff;border-color:#14532d}
+.day{font-weight:600;margin:16px 0 8px;color:#374151}
+.card{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:10px;border-left:6px solid var(--c);box-shadow:0 1px 2px #0001}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{font-size:12px;padding:2px 10px;border-radius:20px;background:color-mix(in srgb,var(--c) 15%,#fff);color:var(--c);font-weight:600}
+.time{font-weight:600}.late{color:var(--r)}
+.nm{font-size:16px;font-weight:600;margin:6px 0 2px}.nm a{font-size:13px;color:var(--mu)}
+.mu{color:var(--mu)}.loc{margin:6px 0;line-height:1.6}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chip{background:#f3f4f6;border-radius:8px;padding:3px 8px;font-size:12px}
+.chip.warn{background:#fef3c7;color:#92400e}.chip.mv{background:#dbeafe;color:#1e40af}.chip.rd{background:#ede9fe;color:#5b21b6}
+.moved{font-size:12px;background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:6px}
+.owe{font-size:12px;background:#fff7ed;color:#c2410c;padding:2px 8px;border-radius:6px;font-weight:600}
+.total{font-size:17px;font-weight:600;color:#14532d}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.acts .btn{font-size:13px;padding:6px 10px}
+.det{background:#f9fafb;border-radius:10px;padding:8px 10px;margin:6px 0 2px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.det.open{display:block}.more{font-size:12px;color:var(--b);cursor:pointer}
+.pics{display:flex;gap:6px;overflow-x:auto;margin:8px 0}.pics img,.addpic{width:72px;height:56px;border-radius:8px;object-fit:cover;flex:none;cursor:pointer;background:#f3f4f6}
+.addpic{border:2px dashed var(--bd);display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;color:var(--mu);margin:0;line-height:1.2}
+.paid{margin-top:8px;background:#dcfce7;color:#166534;border-radius:10px;padding:6px 10px;display:flex;gap:8px;align-items:center;font-weight:600;flex-wrap:wrap}.paid img{width:40px;height:40px;border-radius:6px;object-fit:cover;cursor:pointer}
+.urg{box-shadow:0 0 0 2px #fecaca}.urgb{background:var(--r);color:#fff;font-size:12px;padding:2px 8px;border-radius:20px;font-weight:600}
+.nocf{margin:8px 0 2px;background:#fff7ed;color:#c2410c;border:1px solid #fdba74;border-radius:10px;padding:7px 10px;font-weight:600}
+.wt{border-style:dashed;border-color:#fdba74;border-left:6px solid var(--o);background:#fffcf8}
+.cx{opacity:.6}
+.timer{margin-top:8px;background:#f5f3ff;color:#5b21b6;border-radius:10px;padding:7px 10px}.timer.done{background:#f3f4f6;color:#374151}
+.rounds{margin-top:8px;border:1px solid var(--bd);border-radius:10px;overflow:hidden}.rounds div{padding:6px 10px;border-top:1px solid var(--bd);font-size:13px;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap}.rounds div:first-child{border-top:0}.rounds .now{background:#f5f3ff;font-weight:600}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:9;padding:16px}
+.modal.on{display:flex}.sheet{background:#fff;width:100%;max-width:560px;border-radius:18px;padding:18px;max-height:88vh;overflow:auto;box-shadow:0 10px 40px #0005;animation:pop .15s ease-out}@keyframes pop{from{transform:scale(.95);opacity:0}}
+.sheet h3{margin:0 0 10px}label{display:block;font-size:12px;color:var(--mu);margin-top:10px}
+input,select,textarea{width:100%;padding:9px;border:1px solid var(--bd);border-radius:10px;font:inherit;background:#fff}
+input[type=radio],input[type=checkbox]{width:auto;margin-right:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tp{display:flex;align-items:center;gap:4px}.tp select{flex:1;min-width:0;text-align:center;padding:9px 4px}
+.tr{display:grid;grid-template-columns:1.5fr .7fr 1.2fr 36px;gap:6px;margin-top:6px}
+.pay{display:flex;gap:8px;margin-top:6px}.pay label{flex:1;margin:0;border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center;color:var(--tx);font-size:14px;cursor:pointer}
+.pay label:has(input:checked){border-color:var(--pr);background:#f0fdf4;font-weight:600}
+.box{margin-top:8px;background:#eff6ff;border-radius:10px;padding:10px}.box[hidden]{display:none}
+.cats{display:flex;flex-wrap:wrap;gap:6px}.cats .btn{padding:8px 10px}
+.exrow{display:grid;grid-template-columns:80px 1fr 1.3fr 36px;gap:6px;align-items:center;margin-top:8px}.exrow input,.exrow select{padding:8px;font-size:15px}
+.sumbox{margin-top:10px;background:#f9fafb;border-radius:12px;padding:10px 12px;line-height:1.9}.sumbox .big{font-size:16px;color:#14532d;border-top:1px dashed var(--bd)}
+.row.cash{background:#dcfce7;border-radius:8px;padding:2px 8px;margin-top:4px;color:#166534}.row.oweb{background:#fff7ed;border-radius:8px;padding:2px 8px;margin-top:4px;color:#c2410c}
+.err{color:var(--r);font-size:13px;margin-top:8px;font-weight:600}
+.log{border-left:3px solid var(--bd);padding-left:10px;margin-top:8px}.log div{margin-bottom:6px;font-size:13px}
+.hotbox,.latebox,.warnbox{margin:8px 0 2px;border-radius:10px;padding:8px 10px;font-weight:700}
+.hotbox{background:#dc2626;color:#fff;animation:hotp 1s ease-in-out infinite}.latebox{background:#fef2f2;color:#991b1b;border:2px solid #dc2626}.latebox .acts{margin-top:6px}
+.warnbox{background:#fff7ed;color:#c2410c;border:1px solid #fb923c}
+.card.lv-hot{box-shadow:0 0 0 3px #dc2626;animation:hotc 1.2s ease-in-out infinite}.card.lv-late{background:#fff5f5}
+@keyframes hotp{50%{opacity:.75}}@keyframes hotc{50%{box-shadow:0 0 0 3px #fca5a5}}
+.soon b{display:block;margin-top:4px}.soon.red{background:#fee2e2;border:2px solid #dc2626;color:#991b1b}.soon .hot{background:#dc2626;color:#fff;border-radius:8px;padding:4px 8px;animation:hotp 1s infinite}
+.selck{display:inline-flex;align-items:center;gap:6px;margin:0 0 6px;padding:4px 10px;border:1px solid var(--bd);border-radius:20px;color:var(--r);font-weight:600;cursor:pointer}
+.selbar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:8;background:#111827;color:#fff;border-radius:14px;padding:8px 10px;display:flex;gap:8px;align-items:center;box-shadow:0 8px 24px #0005;max-width:94vw;flex-wrap:wrap}.selbar[hidden]{display:none}
+.crew{display:flex;flex-wrap:wrap;gap:6px}.crew .btn{min-width:46px}
+.bar{display:grid;grid-template-columns:90px 1fr 70px;gap:8px;align-items:center;margin-top:8px}.bar div{background:#f3f4f6;border-radius:6px;height:14px}.bar i{display:block;height:100%;background:var(--r);border-radius:6px;opacity:.75}.bar b{text-align:right}
+.tb{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}.tb th,.tb td{padding:6px 4px;border-bottom:1px solid var(--bd);text-align:right}.tb th:nth-child(-n+2),.tb td:nth-child(-n+2){text-align:left}.tb .tt td{font-weight:700;border-top:2px solid #374151}
+@media print{header,.stats,.search,#soon,.tabs,.toast,.noprint,#geoMap,#geoInfo{display:none!important}.card{box-shadow:none;break-inside:avoid}}
+.zoom{position:fixed;inset:0;background:#000e;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:30;touch-action:pan-y}.zoom.on{display:flex}
+.zoom{padding:58px 64px 86px}.zoom #zmi{max-width:100%;max-height:100%;min-height:0;object-fit:contain;user-select:none;-webkit-user-drag:none}
+@media(max-width:600px){.zoom{padding:58px 8px 86px}}
+.zoom .zb{position:absolute;border:0;background:#0008;color:#fff;border-radius:50%;width:44px;height:44px;font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}.zoom .zb:hover{background:#000c}
+.zoom .zp{left:10px;top:50%;transform:translateY(-50%)}.zoom .zn{right:10px;top:50%;transform:translateY(-50%)}.zoom .zx{right:10px;top:10px;font-size:20px}
+.zoom .zc{position:absolute;left:14px;top:18px;color:#fff;font-weight:600;font-size:14px;background:#0008;padding:3px 10px;border-radius:12px}
+.zoom .zt{position:absolute;left:0;right:0;bottom:10px;display:flex;gap:6px;justify-content:safe center;overflow-x:auto;padding:4px 12px}
+.zoom .zt img{width:56px;height:56px;object-fit:cover;border-radius:6px;opacity:.55;cursor:pointer;flex:none;border:2px solid transparent}.zoom .zt img.on{opacity:1;border-color:#fff}
+.zoom.one .zp,.zoom.one .zn,.zoom.one .zt,.zoom.one .zc{display:none}.zoom.one{padding:58px 8px 20px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:12px;display:none;gap:12px;align-items:center;z-index:40;box-shadow:0 4px 12px #0004;max-width:94vw}
+.toast.on{display:flex}.toast button{background:#fbbf24;color:#111;font-weight:600;white-space:nowrap}
+.busy{position:fixed;inset:0;background:#fff8;display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:10px;font-weight:600}.busy.on{display:flex}
+.spin{width:36px;height:36px;border:4px solid #d1fae5;border-top-color:var(--pr);border-radius:50%;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+.alert{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;z-index:45;padding:16px}.alert.on{display:flex}.alert .sheet{max-width:420px}
+.who{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.who .btn{padding:10px 14px}
+.empty{text-align:center;color:var(--mu);padding:40px 0}
+.soon{background:#fef3c7;border:1px solid #fcd34d;color:#92400e;border-radius:12px;padding:8px 12px;margin-top:10px;font-weight:600}
+.soon div{cursor:pointer;margin-top:2px}.soon[hidden]{display:none}
+.calbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}.calbar b{font-size:15px;margin:0 6px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cday{background:#fff;border-radius:12px;padding:8px;min-height:110px;border:1px solid var(--bd)}
+.cday.td{outline:2px solid var(--b)}.cday.past{opacity:.7}
+.cday h4{margin:0 0 4px;font-size:13px;display:flex;justify-content:space-between}.cday h4 span{color:var(--mu);font-weight:400}
+.cev{border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 10%,#fff);border-radius:8px;padding:5px 7px;margin-top:6px;font-size:12px;cursor:pointer;line-height:1.4;word-break:break-word}
+.cev b{display:block}.cev .mu{font-size:11px}
+.cev.urgc{box-shadow:0 0 0 1px #fca5a5}
+@media(max-width:760px){.cal{grid-template-columns:1fr}.cday{min-height:0}.cday.empty-day{display:none}}
+.ok{color:var(--pr);font-size:13px;margin-top:6px}
+.syncSt{font-size:12px;opacity:.95;margin-top:2px;cursor:pointer}.syncSt.wait{color:#b45309}.syncSt.off{color:#b91c1c}
+/* แผนที่พื้นหลัง กทม. + ปริมณฑล (จอคอม) — ดู geoInit ในสคริปต์ */
+#geoMap,#geoInfo{display:none}
+/* ปกติ (ไม่ได้เลือกงาน) = รายการกลางจอแบบเดิม แผนที่ซ่อน · เลือกงาน/เปิดแผนที่ (geoAct) = แผนที่เด้งขึ้น รายการชิดซ้าย */
+body.geoOn #geoMap{display:block;position:fixed;inset:0;z-index:0;background:var(--bg);cursor:grab;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s .45s}
+body.geoOn.geoAct #geoMap{opacity:1;visibility:visible;transition:opacity .45s ease}
+#geoOpen{display:none}
+body.geoOn:not(.geoAct):not(.calw) #geoOpen{display:block;position:fixed;right:18px;bottom:64px;z-index:2}
+body.geoOn #geoMap:active{cursor:grabbing}
+body.geoPick #geoMap{cursor:crosshair}
+body.geoOn #geoMap .leaflet-tile-pane{opacity:.82;filter:saturate(.85)}
+body.geoOn #geoMap .leaflet-control-attribution{background:#fff9;font-size:10px}
+body.geoOn #geoMap .leaflet-bottom.leaflet-right{margin-bottom:48px}
+body.geoOn #geoMap .leaflet-control-zoom a{width:38px;height:38px;line-height:36px;font-size:22px}
+body.geoOn .wrap{position:relative;z-index:1}
+/* เลือกงาน/เปิดแผนที่ = รายการแคบลงชิดซ้าย (เลื่อนไปนุ่ม ๆ) เหลือที่ให้แผนที่มากขึ้น · ปฏิทินใช้เต็มจอเหมือนเดิม
+   20 ต.ค.: เดิมรายการกว้าง 960 ที่ว่างในการ์ดเยอะ แผนที่เหลือนิดเดียว + กระโดดไปทันที */
+body.geoOn:not(.calw) .wrap{margin-left:max(0px,calc((100% - 960px)/2));transition:margin-left .45s cubic-bezier(.22,.8,.24,1),max-width .45s cubic-bezier(.22,.8,.24,1)}
+body.geoOn.geoAct:not(.calw):not(.geoOnly) .wrap{margin-left:16px;max-width:min(600px,55vw)}
+body.geoOn .card{transition:box-shadow .25s}
+body.geoOn.geoAct .day{display:inline-block;background:#ffffffd9;padding:2px 12px;border-radius:10px}
+body.geoOn.geoAct .empty{background:#ffffffd9;border-radius:14px}
+body.geoOn .card.geoHi,body.geoOn .cev.geoHi{box-shadow:0 0 0 2px var(--c),0 8px 22px #0003}
+body.geoOn .card.geoSel,body.geoOn .cev.geoSel{box-shadow:0 0 0 4px var(--c),0 10px 28px #0004}
+body.geoOn .card[data-gid]{cursor:pointer}
+#geoInfo .gsel{margin:-2px 0 6px;font-size:12.5px;font-weight:700;color:#7c3aed}
+.geoBtns{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.geoBtn{background:#fff;border:0;border-radius:10px;padding:7px 12px;font:700 14px Prompt,sans-serif;color:#111827;box-shadow:0 2px 8px #0003;cursor:pointer}
+.geoBtn:hover{background:#f0fdf4}
+.geoBtn.need{background:#16a34a;color:#fff;animation:geoNeed 1.6s ease-in-out infinite}
+@keyframes geoNeed{50%{box-shadow:0 0 0 6px #16a34a40}}
+.geoPin{cursor:pointer}
+.geoPin i{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;background:var(--gc);border:3px solid #fff;box-shadow:0 1px 4px #0005}
+.geoPin b{position:absolute;left:12px;top:-13px;white-space:nowrap;background:#fffffff2;border-left:4px solid var(--gc);border-radius:7px;padding:2px 8px;font:600 13px Prompt,sans-serif;color:#111827;box-shadow:0 1px 5px #0003}
+.geoPin b u{text-decoration:none;color:#374151;font-weight:700}
+.geoPin b.td u{color:#fff;background:var(--gc);border-radius:5px;padding:0 5px}
+.geoPin:hover b{background:#fff;box-shadow:0 0 0 2px var(--gc)}
+.geoShop i{position:absolute;left:-17px;top:-17px;width:34px;height:34px;border-radius:50%;background:#16a34a;border:3px solid #fff;box-shadow:0 2px 8px #0005;font-style:normal;font-size:17px;line-height:28px;text-align:center}
+.geoShop b{position:absolute;left:22px;top:-13px;white-space:nowrap;background:#16a34a;color:#fff;border-radius:8px;padding:2px 9px;font:700 13px Prompt,sans-serif;box-shadow:0 1px 5px #0003}
+.geoShop.cand i{background:#f59e0b}.geoShop.cand b{background:#f59e0b}
+.geoFocus i{position:absolute;left:-12px;top:-12px;width:24px;height:24px;border-radius:50%;background:var(--gc);border:4px solid #fff;box-shadow:0 0 0 1px #0004,0 3px 10px #0004}
+.geoFocus i::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:3px solid var(--gc);animation:geoPulse 1.4s ease-out infinite}
+@keyframes geoPulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+.geoFocus i{animation:geoPop .4s cubic-bezier(.3,1.5,.5,1)}
+@keyframes geoPop{from{transform:scale(0)}to{transform:scale(1)}}
+/* เลือกงาน (มีรายการอยู่ซ้าย): ไม่มีกล่องข้อมูลขวา (ซ้ำกับการ์ด) · ระยะทาง/เวลาเป็นป้ายบนแผนที่เหนือจุดงาน · กำลังคำนวณ/หาไม่ได้ = ป้ายเล็กกลางด้านบน */
+#geoPill{display:none}
+body.geoOn.geoAct:not(.geoOnly) #geoPill:not([hidden]){display:block;position:fixed;top:72px;z-index:3;transform:translateX(-50%);max-width:min(520px,calc(100vw - 680px));background:#fff;border-radius:20px;padding:6px 14px;box-shadow:0 4px 14px #0003;font-size:13.5px;font-weight:600;color:#374151;animation:geoIn .3s ease-out}
+#geoPill.warn{background:#fef3c7;color:#92400e}
+@keyframes geoIn{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%,0)}}
+.leaflet-tooltip.geoTip{background:#fff;border:0;border-radius:12px;padding:7px 12px;box-shadow:0 4px 16px #0004;font:600 13px/1.5 Prompt,sans-serif;color:#111827;white-space:nowrap;animation:geoFade .4s ease-out}
+.leaflet-tooltip-top.geoTip::before{border-top-color:#fff}
+.geoTip b{font-size:15px}.geoTip .mu{color:#6b7280;font-weight:500;font-size:12px}.geoTip .lg{font-weight:800;color:var(--c)}
+@keyframes geoFade{from{opacity:0}to{opacity:1}}
+/* กล่องขวาบน: วัน-เวลานัด + ระยะทาง / เวลาเดินทาง · ตั้งตำแหน่งร้าน */
+body.geoOn #geoInfo:not([hidden]){display:block;position:fixed;right:16px;top:86px;z-index:3;width:340px;max-width:calc(100vw - 32px);background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 6px 24px #0003;border-top:5px solid #16a34a;font-size:14px}
+body.geoOnly header,body.geoOnly .wrap{display:none}
+body.geoOnly #geoInfo:not([hidden]){top:16px}
+.geoBtn#geoOnlyBtn{background:#14532d;color:#fff}.geoBtn#geoOnlyBtn:hover{background:#166534}
+.geoBtn#geoCloseBtn{color:#b91c1c}
+body.geoOn #geoInfo:not([hidden]){max-height:calc(100vh - 110px);overflow:auto}
+#geoInfo .gtop{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+#geoInfo .gst{font-size:12px;font-weight:700;color:var(--t);background:color-mix(in srgb,var(--t) 13%,#fff);border-radius:20px;padding:2px 9px}
+#geoInfo .gid{font-size:11.5px;color:#6b7280;margin-left:auto}
+#geoInfo .gx{border:0;background:#f3f4f6;border-radius:8px;width:28px;height:28px;font-size:14px;cursor:pointer}#geoInfo .gx:hover{background:#e5e7eb}
+#geoInfo .gtel{font-size:13px;color:#6b7280}
+#geoInfo .gwarn{color:#92400e;background:#fef3c7;border-radius:8px;padding:3px 8px;font-size:13px}
+#geoInfo .gdet{margin-top:6px;background:#f9fafb;border-radius:9px;padding:6px 9px;font-size:13px;line-height:1.5;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+#geoInfo .gacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+#geoInfo>b{font-size:17px}#geoInfo .gi{margin-top:4px;line-height:1.5}#geoInfo .mu{color:#6b7280;font-size:13px}
+#geoInfo .gk{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 8px;text-align:center}
+#geoInfo .gk div{background:#f3f4f6;border-radius:10px;padding:6px 4px}#geoInfo .gk span{display:block;font-size:12px;color:#6b7280}#geoInfo .gk b{font-size:16px}
+#geoInfo .glegs{display:flex;flex-direction:column;gap:3px;margin:0 0 8px;font-size:13px}
+#geoInfo .glegs div{display:flex;align-items:center;gap:6px;background:#f9fafb;border-radius:9px;padding:4px 8px}
+#geoInfo .glegs i{font-style:normal;font-weight:800;color:var(--c)}
+#geoInfo .glegs b{margin-left:auto;white-space:nowrap}
+#geoInfo .glegs .bad{color:#b45309;background:#fffbeb}
+.geoDrop i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:#7c3aed;border:3px solid #fff;box-shadow:0 2px 8px #0005;font-style:normal;font-size:14px;line-height:22px;text-align:center}
+.geoDrop b{position:absolute;left:18px;top:-12px;white-space:nowrap;background:#7c3aed;color:#fff;border-radius:8px;padding:2px 8px;font:700 12.5px Prompt,sans-serif;box-shadow:0 1px 5px #0003}
+#geoInfo .tr{font-weight:700;color:var(--t);background:color-mix(in srgb,var(--t) 12%,#fff);border-radius:9px;padding:5px 9px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#geoInfo .gr{display:flex;gap:6px;margin-top:8px}#geoInfo .gr input{flex:1;min-width:0;padding:7px 9px;border:1px solid #d1d5db;border-radius:9px;font:inherit}
+/* กล่องตัวเลขด้านบน กดได้: งานวันนี้ / ยังไม่คอนเฟิร์ม / ปิดงานวันนี้ (แทนแท็บ "วันนี้") · กดอีกครั้ง = กลับไปดูงานที่ยังไม่ปิด */
+.st[data-st]{cursor:pointer;transition:box-shadow .15s}
+.st[data-st]:hover{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 45%,#fff)}
+.st.on{background:color-mix(in srgb,var(--c) 9%,#fff);box-shadow:inset 0 0 0 2px var(--c)}
+.st.on span::after{content:' · กำลังดู'}
+</style></head><body>
+<div id="geoMap" aria-hidden="true"></div>
+<div id="geoInfo" hidden></div>
+<div id="geoPill" hidden></div>
+<button type="button" class="geoBtn" id="geoOpen" onclick="geoOpenMap()" title="เปิดแผนที่งานทั้งหมด (ตั้งตำแหน่งร้านได้)">🗺 ดูแผนที่งาน</button>
+<header>
+ <div><h1>&#x1F69B; งานนอก</h1><div id="who" onclick="pickMe()">&#x1F464; เลือกชื่อผู้ใช้</div><div class="syncSt" id="syncSt" onclick="syncNow()" title="กดเพื่อส่ง/ดึงข้อมูลกับเว็บเดี๋ยวนี้"></div></div>
+ <div style="display:flex;gap:6px"><button class="btn w" onclick="load()" title="โหลดใหม่">⟳</button><button class="btn w" onclick="newJob()">+ รับงานใหม่</button></div>
+</header>
+<div class="wrap">
+ <div class="stats">
+  <div class="st" data-st="today" onclick="stTab('today')" title="กดเพื่อดูเฉพาะงานวันนี้ · กดอีกครั้ง = ดูงานที่ยังไม่ปิด" style="--c:var(--b)"><b id="sToday">-</b><span>งานวันนี้</span></div>
+  <div class="st" data-st="wait" onclick="stTab('wait')" title="กดเพื่อดูเฉพาะงานที่ยังไม่คอนเฟิร์ม · กดอีกครั้ง = ดูงานที่ยังไม่ปิด" style="--c:var(--o)"><b id="sWait" style="color:var(--o)">-</b><span>ยังไม่คอนเฟิร์ม</span></div>
+  <div class="st" data-st="done" onclick="stTab('done')" title="กดเพื่อดูงานที่ปิดวันนี้ · กดอีกครั้ง = ดูงานที่ยังไม่ปิด" style="--c:var(--pr)"><b id="sDone">-</b><span>ปิดงานวันนี้</span></div>
+ </div>
+ <input class="search" id="q" placeholder="&#x1F50D; ค้นหา ชื่อ / เบอร์ / ที่อยู่" oninput="Q=this.value.trim();render()">
+ <div class="soon" id="soon" hidden></div>
+ <div class="tabs" id="tabs"></div>
+ <div id="list"><div class="empty">กำลังโหลด...</div></div>
+</div>
+<datalist id="trkList"><option value="6 ล้อ"><option value="กระบะ"><option value="10 ล้อ"></datalist>
+<div class="modal" id="m"><div class="sheet" id="sh"></div></div>
+<div class="modal" id="cf" style="z-index:12" onclick="if(event.target===this)cfNo()"><div class="sheet" style="max-width:380px"><h3>ออกจากหน้านี้?</h3><p class="mu" id="cfT"></p><div class="acts"><button class="btn o" onclick="cfNo()">อยู่ต่อ</button><button class="btn r" onclick="cfYes()">ออก</button></div></div></div>
+<div class="alert" id="al"><div class="sheet"><div id="alt" style="line-height:1.7"></div><div class="acts"><button class="btn g" onclick="al.classList.remove('on')">ตกลง</button></div></div></div>
+<div class="zoom" id="zm" onclick="if(event.target===this)zoomClose()"><span class="zc" id="zmc"></span><button class="zb zx" type="button" onclick="zoomClose()" aria-label="ปิด">✕</button><button class="zb zp" type="button" onclick="zoomGo(-1)" aria-label="รูปก่อนหน้า">‹</button><img id="zmi" alt=""><button class="zb zn" type="button" onclick="zoomGo(1)" aria-label="รูปถัดไป">›</button><div class="zt" id="zmt"></div></div>
+<div class="toast" id="toast"><span id="tmsg"></span><button class="btn" id="tbtn" onclick="undo()">↩ ย้อนกลับ</button></div>
+<div class="selbar" id="selbar" hidden><span id="selN"></span><button class="btn o sm" onclick="selAll()">เลือกทั้งหน้า</button><button class="btn r" onclick="delSel()">&#x1F5D1; ลบที่เลือก</button><button class="btn o" onclick="selMode(false)">เสร็จ</button></div>
+<div class="busy" id="busy"><div class="spin"></div><div id="busyT">กำลังบันทึก...</div></div>
+
+<script src="ngn-core.js"></script>
+<script>
+const BUILD_UI='ngannok-20261002-13';
+let J={},STAFF=[],ME='',TAB='active',Q='',BUSY=false,LAST_LOG='',TT;
+try{ME=localStorage.getItem('ngannok_me')||''}catch(e){}
+const TABS={active:'งานที่ยังไม่ปิด',review:'\uD83D\uDD0D รอตรวจสอบ',cal:'\uD83D\uDCC5 ปฏิทิน',hist:'📁 ประวัติ',sum:'\uD83D\uDCCA สรุปยอด'};
+const CATS=['\uD83D\uDCA7 น้ำ','\uD83C\uDF5A ข้าว','✏️ อื่นๆ'],SRC=['หักจากเงินค่างาน','ลูกน้องออกก่อน','เงินร้าน'];
+const TYPES=['ขนทิ้ง','ขนย้าย','รื้อ + ขนทิ้ง','อื่นๆ'];
+const TH_D=['อา','จ','อ','พ','พฤ','ศ','ส'],TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const $=id=>document.getElementById(id);
+const p2=n=>('0'+n).slice(-2);
+const ymd=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+// เวลาไทยคงที่ (UTC+7) เหมือนรหัส.gs — เครื่องที่ไม่ได้ตั้งโซนไทยจะได้ค่าเดียวกับเซิร์ฟเวอร์ (bkkDay อยู่ด้านล่าง เรียกตอนใช้งาน)
+const TODAY=()=>bkkDay(Date.now());
+const nowHM=()=>hm(Date.now());
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString('en-US');
+function fmtD(s){if(!s)return'';const[y,m,d]=s.split('-').map(Number);return `${TH_D[new Date(y,m-1,d).getDay()]} ${d} ${TH_M[m-1]}`}
+const hm=t=>{const d=new Date(t+252e5);return p2(d.getUTCHours())+':'+p2(d.getUTCMinutes())};
+const dmhm=t=>{const d=new Date(t+252e5);return `${d.getUTCDate()}/${p2(d.getUTCMonth()+1)} ${hm(t)}`};
+const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),h=Math.floor(m/60);return(h?h+' ชม. ':'')+(m%60)+' นาที'};
+/* ช่องเวลา 24 ชม. — input type=time ของเบราว์เซอร์โชว์ AM/PM ตามภาษาเครื่อง บังคับไม่ได้
+   ค่าจริงอยู่ใน hidden input id เดิม (โค้ดเดิมอ่าน $(id).value ได้เหมือนเดิม) · ตั้งค่าจากโค้ดต้องใช้ tSet */
+const tNorm=v=>{const m=String(v||'').match(/^(\d{1,2})[:.](\d{2})/);return m&&+m[1]<24&&+m[2]<60?p2(+m[1])+':'+m[2]:''};
+function tOpts(list,v){return '<option value="">--</option>'+list.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('')}
+function tMins(m){const a=[...Array(12)].map((_,i)=>p2(i*5));if(m&&a.indexOf(m)<0){a.push(m);a.sort()}return a}
+function tpick(id,v,dis){v=tNorm(v);const h=v.slice(0,2),m=v.slice(3),d=dis?'disabled':'';
+ return `<span class="tp" data-for="${id}"><select ${d} onchange="tRead('${id}')">${tOpts([...Array(24)].map((_,i)=>p2(i)),h)}</select><b>:</b><select ${d} onchange="tRead('${id}')">${tOpts(tMins(m),m)}</select></span><input type="hidden" id="${id}" value="${v}">`}
+function tRead(id){const s=document.querySelectorAll('.tp[data-for="'+id+'"] select');if(s[0].value&&!s[1].value)s[1].value='00';$(id).value=s[0].value?s[0].value+':'+s[1].value:''}
+function tSet(id,v){v=tNorm(v);const s=document.querySelectorAll('.tp[data-for="'+id+'"] select');if(!s.length||!$(id))return;
+ s[1].innerHTML=tOpts(tMins(v.slice(3)),v.slice(3));s[0].value=v.slice(0,2);$(id).value=v}
+/* เวลาไทยจาก วันที่ + HH:MM โดยไม่ขึ้นกับเขตเวลาของเครื่อง */
+const bkkTs=(ds,t)=>{const a=ds.split('-');return Date.UTC(+a[0],a[1]-1,+a[2],+t.slice(0,2),+t.slice(3,5))-252e5};
+const bkkDay=ts=>new Date(ts+252e5).toISOString().slice(0,10);
+const cur=j=>j.rounds[j.rounds.length-1];
+const rPrice=r=>r.trucks.reduce((a,t)=>a+t[1]*t[2],0);
+const tPrice=j=>j.rounds.reduce((a,r)=>a+rPrice(r),0);
+const received=j=>j.rounds.reduce((a,r)=>a+(r.pay?r.pay.a:0),0);
+const rExp=r=>(r.exp||[]).reduce((a,e)=>a+e[1],0);
+const tExp=j=>j.rounds.reduce((a,r)=>a+rExp(r),0);
+const owed=j=>Math.max(0,j.rounds.reduce((a,r)=>a+(r.st=='done'?rPrice(r)-(r.pay?r.pay.a:0):0),0));
+const win=r=>r.to?r.from+'–'+r.to:r.from;
+const HOLD=r=>!!(r.hold||!r.date);
+const trk=(r,sep)=>r.trucks.filter(t=>t[0]!='ราคางาน').map(t=>esc(t[0])+' ×'+t[1]).join(sep||' ');
+const toM=s=>{const p=String(s||'').split(':');return +p[0]*60+ +p[1]};
+const nowM=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
+const mTo=j=>toM(cur(j).from)-nowM();
+const hmTxt=m=>(m>=60?Math.floor(m/60)+' ชม. ':'')+(m%60)+' นาที';
+// ระดับเตือนของงานที่ยังไม่ออกเดินทาง: late=เลยเวลา · hot=ภายใน 1 ชม. (งานด่วน) · warn=ภายใน 4 ชม.
+function lvl(j){const r=cur(j);if(j.status!='open'||!['wait','ok'].includes(r.st)||HOLD(r))return'';if(late(j))return'late';if(r.date!=TODAY())return'';const m=mTo(j);return m<=60?'hot':m<=240?'warn':''}
+const late=j=>{const r=cur(j);if(j.status!='open'||!['wait','ok'].includes(r.st)||HOLD(r))return false;const t=TODAY();return r.date<t||(r.date==t&&(r.to||r.from)<nowHM())};
+const img=(id,w)=>'https:'+'/'+'/drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w'+(w||400);
+// ลิงก์แผนที่จากข้อมูลงานใช้ได้เฉพาะ http(s) (ShopPOS: หน้านี้อยู่ที่เดียวกับโปรแกรม ลิงก์ javascript: ห้ามผ่าน)
+const mapUrl=(a,l)=>(/^https?:[/][/]/i.test(String(l||''))?l:'')||('https:'+'/'+'/www.google.com/maps/search/?api=1&query='+encodeURIComponent(a));
+const msg=e=>(e&&e.message)||String(e);
+const nl=s=>esc(s).replace(/\n/g,'<br>');
+/* ค่าจากข้อมูล (เลขงาน/เลขรูป/ชื่อคน) ที่ใส่เป็นอาร์กิวเมนต์ใน onclick="…" — ทำเป็นสตริง JS ก่อนแล้วค่อย esc
+   (esc อย่างเดียวไม่พอ: ตัวอ่าน HTML ถอด &#39; กลับเป็น ' ก่อนรันสคริปต์ → ชื่อที่มี ' ทำปุ่มพัง/สั่งรันโค้ดได้ ·
+   ShopPOS: หน้านี้ใช้ api ของโปรแกรมได้ทั้งหมด) */
+const jsa=v=>esc(JSON.stringify(String(v==null?'':v)));
+
+/* ---------- เชื่อมเซิร์ฟเวอร์ ---------- */
+/* ShopPOS: แทน google.script.run — กดปุ่มแล้วคิดผลในเครื่องทันที (ngn-core.js = โค้ดเดียวกับเว็บ)
+   ตัวโปรแกรมเก็บงาน + คิวคำสั่ง แล้วส่งให้เว็บงานนอกเบื้องหลัง (เน็ตหลุดก็กดได้ ส่งทีหลังเอง) */
+const SHOP=window.parent&&window.parent!==window?window.parent:null;
+let SYNC={pending:0,sync:{}},LOADS=0;
+async function call(path,body){
+ if(!SHOP||typeof SHOP.api!=='function')throw new Error('เปิดหน้านี้จากโปรแกรม ShopPOS (เมนู หลังบ้าน → งานนอก)');
+ try{return await SHOP.api(path,body)}catch(e){if(e&&e.data&&typeof e.data==='object')return e.data;throw e}
+}
+let NGN_BC=null;try{NGN_BC=new BroadcastChannel('shoppos-ngn-data');NGN_BC.onmessage=()=>{if(!BUSY)load(true)}}catch(e){}   // load ซ้อนกันไม่ได้ (รวมเป็นรอบเดียว)
+function ngnTell(){try{NGN_BC&&NGN_BC.postMessage(1)}catch(e){}}
+async function run(fn,...a){
+ if(fn==='uploadPhoto')return call('ngn/photo',{b64:a[0],name:a[1]});
+ const req=a[0]||{};
+ if(req.action==='list'){const r=await call('ngn'+(LOADS++?'':'?fresh=1'));syncPaint(r);return r}
+ if(req.action==='shop'||req.action==='setShop'||req.action==='route'||req.action==='links')return call('ngn/web',{req});   // แผนที่: ถามเว็บงานนอกตรง ๆ (ต้องต่อเน็ต)
+ if(req.action==='undo'){const r=await call('ngn/undo',{lid:req.logId,by:req.by});if(r.ok)ngnTell();return r}
+ // เวลาที่กดจริง (at): คำสั่งที่ค้างส่งทีหลัง เว็บใช้เวลานี้แทนเวลาที่ส่งถึง · ปิดงานไม่ได้ใส่เวลาเสร็จ = ใส่เวลาที่กดให้ (autoEnd)
+ // (เว็บรุ่นที่ยังไม่รู้จัก at จะได้เวลาเสร็จจริง ไม่ปฏิเสธงานที่ส่งถึงหลังเที่ยงคืน)
+ if(['depart','confirm','finish','verify'].indexOf(req.action)>=0){const at=Date.now();req.p=Object.assign({},req.p||{},{at});if(req.action==='finish'&&!req.p.endTime){req.p.endTime=hm(at);req.p.autoEnd=true}}
+ let m;
+ try{m=NGN_CORE.mutate(req,J)}catch(e){return{ok:false,error:String(e&&e.message||e)}}
+ if(m.conflict)return{ok:false,conflict:true,job:m.job,error:m.error};
+ const lid='A'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+ const r=await call('ngn/apply',{lid,req,job:m.job||null,text:m.text});
+ if(r.ok){ngnTell();reloadSoon(6000)}   // ส่งถึงเว็บแล้วได้เลขงานจริง/ฉบับจริง
+ return r;
+}
+/* สถานะส่ง/ดึงกับเว็บ (มุมบนซ้าย) */
+let SYNC_NOTE='';
+function syncPaint(r){
+ SYNC=r||SYNC;const e=$('syncSt'),s=SYNC.sync||{},n=+SYNC.pending||0;
+ e.className='syncSt'+(n?' wait':s.err?' off':'');
+ e.textContent=n?'⏳ รอส่งขึ้นเว็บ '+n+' คำสั่ง':s.err?'☁ ✗ '+s.err:'☁ ✓ ตรงกับเว็บแล้ว';
+ if(s.note&&s.note!==SYNC_NOTE){SYNC_NOTE=s.note;alertBox('⚠ '+s.note+'\nระบบใช้ข้อมูลล่าสุดจากเว็บแทนแล้ว')}
+ if(n)reloadSoon(SYNC_WAIT);   // ยังมีคำสั่งรอส่ง = ดูใหม่อีกครั้งเร็ว ๆ (ตัวตั้งเวลาเดียว ไม่ซ้อน)
+}
+async function syncNow(){try{await call('ngn/sync',{});reloadSoon(3000)}catch(e){alertBox(msg(e))}}
+function showBusy(t){BUSY=true;$('busyT').textContent=t||'กำลังบันทึก...';$('busy').classList.add('on')}
+function hideBusy(){BUSY=false;$('busy').classList.remove('on')}
+function alertBox(t){$('alt').innerHTML=nl(t);$('al').classList.add('on')}
+/* โหลดรายการงาน — ขอซ้อนกันกี่ครั้งก็โหลดทีละรอบ (กำลังโหลดอยู่ = นัดอีกแค่รอบเดียวหลังรอบนี้ · await แล้วได้ข้อมูลหลังที่ขอเสมอ)
+   ShopPOS: เดิมทุกการโหลดตอนมีคำสั่งรอส่ง ตั้งรอบใหม่ทุก 8 วิ ซ้อนกันเพิ่มเรื่อย ๆ ทั้งวัน (เน็ตหลุด/เว็บยังไม่อัปเดต = เครื่องอืด) */
+let LOAD_P=null,LOAD_NEXT=null,RELOAD_T=null,RELOAD_AT=0,SYNC_WAIT=8000;
+function load(silent){
+ if(LOAD_P){if(!LOAD_NEXT)LOAD_NEXT=LOAD_P.then(()=>{LOAD_NEXT=null;return load(silent)});return LOAD_NEXT}
+ LOAD_P=load1(silent).finally(()=>{LOAD_P=null});
+ return LOAD_P}
+/* โหลดเองอัตโนมัติได้ไหม: ฝังในโปรแกรม = ได้เสมอ แม้หน้าต่างถูกย่อ/ถูกบัง (ป้ายงานด่วนของทุกหน้าต่างมาจากหน้านี้) */
+const autoOk=()=>!document.hidden||!!SHOP;
+/* โหลดซ้ำภายหลัง: ตัวตั้งเวลาเดียว (นัดซ้อน = ใช้นัดที่เร็วกว่า) */
+function reloadSoon(ms){const at=Date.now()+ms;if(RELOAD_T&&RELOAD_AT<=at)return;clearTimeout(RELOAD_T);RELOAD_AT=at;
+ RELOAD_T=setTimeout(()=>{RELOAD_T=null;if(BUSY)reloadSoon(2000);else if(autoOk())load(true)},ms)}
+async function load1(silent){
+ if(!silent)showBusy('กำลังโหลด...');
+ try{const r=await run('api',{action:'list'});if(!r.ok)throw new Error(r.error);
+  // มีหน้าต่างเปิดอยู่: อัพเดตแค่แถบเตือน/ป้าย POS ไม่แตะข้อมูลที่กำลังแก้ · หน้าต่างถูกย่ออยู่: ส่งตัวเลขให้ POS พอ (กลับมาเห็นจอค่อยวาด)
+  if($('m').classList.contains('on')||(silent&&document.hidden)){notifyParent(r.jobs,soonBanner(r.jobs));return}
+  J={};r.jobs.forEach(j=>J[j.id]=j);STAFF=r.staff||[];CAL_ID=r.calId||'';render();if(!ME&&!silent)pickMe();
+  if(r.ready===false&&!r.jobs.length)$('list').innerHTML='<div class="empty">ยังไม่ได้ข้อมูลจากเว็บงานนอก<br><small>'+esc((r.sync&&r.sync.err)||'กำลังดึงข้อมูล…')+'</small></div>'}
+ catch(e){if(!silent)alertBox('โหลดข้อมูลไม่สำเร็จ: '+msg(e))}
+ finally{if(!silent)hideBusy()}
+}
+async function act(action,id,p,okText){
+ if(!ME){pickMe();return false}
+ const j=id?J[id]:null;showBusy();
+ try{
+  const r=await run('api',{action,id,ver:j?j.version:null,by:ME,p});
+  if(r.job)J[r.job.id]=r.job;if(r.deleted)r.deleted.forEach(x=>delete J[x]);
+  if(!r.ok){render();alertBox(r.error);return false}
+  if(action=='create'){NEWDRAFT=null;$('sh').dataset.form=''}
+  close_();render();toastMsg('✓ '+(okText||'บันทึกแล้ว'),r.logId);if(r.calWarn)alertBox(r.calWarn);return r;
+ }catch(e){alertBox('บันทึกไม่สำเร็จ: '+msg(e)+'\nข้อมูลยังไม่ถูกบันทึก ลองกดใหม่อีกครั้ง');return false}
+ finally{hideBusy()}
+}
+async function undo(){
+ if(!LAST_LOG)return;const id=LAST_LOG;LAST_LOG='';$('toast').classList.remove('on');showBusy('กำลังย้อนกลับ...');
+ try{const r=await run('api',{action:'undo',logId:id,by:ME});if(r.job)J[r.job.id]=r.job;if(r.deleted)r.deleted.forEach(x=>delete J[x]);render();if(!r.ok)return alertBox(r.error);toastMsg('↩ ย้อนกลับแล้ว',null)}
+ catch(e){alertBox('ย้อนกลับไม่สำเร็จ: '+msg(e))}finally{hideBusy()}
+}
+function toastMsg(t,logId){LAST_LOG=logId||'';$('tmsg').textContent=t;$('tbtn').style.display=logId?'':'none';$('toast').classList.add('on');clearTimeout(TT);TT=setTimeout(()=>{$('toast').classList.remove('on');LAST_LOG=''},10000)}
+
+/* ---------- ผู้ใช้ ---------- */
+function pickMe(){
+ modal(`<h3>\uD83D\uDC64 ใครใช้งานเครื่องนี้?</h3><p class="mu" style="margin:0">ชื่อนี้จะถูกบันทึกในประวัติทุกครั้งที่กด</p>
+ <div class="who">${STAFF.map(n=>`<button class="btn o" onclick="setMe(${jsa(n)})">${esc(n)}</button>`).join('')}</div>
+ <label>หรือพิมพ์ชื่อ</label><input id="meIn" value="${esc(ME)}" maxlength="40">
+ <div class="err" id="ferr"></div>
+ <div class="acts"><button class="btn g" onclick="setMe($('meIn').value)">บันทึกชื่อ</button>${ME?'<button class="btn o" onclick="close_()">ปิด</button>':''}</div>`)
+}
+function setMe(n){n=String(n||'').trim();if(!n){$('ferr').textContent='⚠ ใส่ชื่อก่อน';return}ME=n;try{localStorage.setItem('ngannok_me',n)}catch(e){}close_();render()}
+
+/* ---------- หน้าหลัก ---------- */
+/* ===== แผนที่พื้นหลัง กทม. + ปริมณฑล (19 ต.ค.) =====
+   จอคอม (กว้าง ≥ 900 + มีเมาส์) เท่านั้น · มือถือไม่โหลดแผนที่ (ไม่เปลืองเน็ต) · เน็ตหลุด/โหลดไม่ได้ = พื้นเดิม
+   จอกว้าง: รายการชิดซ้าย ด้านขวาเป็นแผนที่ · ทุกงานเป็นจุด + ป้าย วัน เวลา ชื่อ (สีตามสถานะ · งานไม่ใช้สีเขียว) · กดจุด = เลื่อนไปการ์ด
+   ร้านเรา = หมุด 🏠 สีเขียว · ตั้งครั้งเดียวด้วยปุ่ม 🏠 ตั้งตำแหน่งร้าน (คลิกบนแผนที่ / วางลิงก์ที่มีพิกัด) เก็บบนเว็บ ทุกเครื่องใช้ร่วมกัน
+   คลิกการ์ด = เลือกงาน → แผนที่ไปงานนั้น (ไม่ขยับตามเมาส์ — เดิมชี้แล้วซูมเข้าออกจนมึน) · คลิกการ์ดเดิมซ้ำ = ยกเลิก กลับภาพรวม
+   เลือกงานแล้ว = เส้นทางจากร้านตามถนน + กล่องบอก ระยะทาง / เวลาปกติ / เวลาตอนนี้ (รถติดไหม) — Google ผ่านเว็บงานนอก (route)
+   จับลากแผนที่ได้ · ซูม (ลูกกลิ้ง / ปุ่ม + −) · ปุ่ม 🗺 ภาพรวม
+   ตำแหน่งงาน: ① พิกัดในลิงก์แผนที่ (@lat,lng / q= / !3d!4d) หรือพิมพ์พิกัดไว้ในที่อยู่ = จุดตรง
+               ② ชื่อย่าน/ตำบล/อำเภอในที่อยู่ = กลางโซน (จังหวัดตรงกับที่อยู่ก่อน → ชื่อที่มาก่อนในที่อยู่ = ละเอียดกว่า → ชื่อยาวกว่า)
+               ③ บอกแค่จังหวัด = กลางจังหวัด · ได้เส้นทางจาก Google แล้ว = ย้ายจุดไปตำแหน่งจริงของที่อยู่ */
+const GEO_PROV={'ก':['กรุงเทพฯ',13.7563,100.5018,'กรุงเทพ|กทม|bangkok'],'น':['นนทบุรี',13.862,100.514,'นนทบุรี|นนท์'],'ป':['ปทุมธานี',14.02,100.60,'ปทุมธานี'],
+ 'ส':['สมุทรปราการ',13.60,100.62,'สมุทรปราการ'],'ค':['สมุทรสาคร',13.55,100.27,'สมุทรสาคร'],'ฐ':['นครปฐม',13.82,100.06,'นครปฐม'],'อ':['อยุธยา',14.35,100.57,'อยุธยา'],'ฉ':['ฉะเชิงเทรา',13.69,101.07,'ฉะเชิงเทรา']};
+const GEO_AREAS=`ก|13.7563,100.4990|พระนคร/สนามหลวง/บางลำพู/ข้าวสาร/เสาชิงช้า
+ก|13.7770,100.5150|ดุสิต/สามเสน
+ก|13.8556,100.8625|หนองจอก
+ก|13.7300,100.5240|บางรัก/สีลม
+ก|13.8730,100.5960|บางเขน/วัชรพล
+ก|13.8720,100.6300|รามอินทรา
+ก|13.7660,100.6470|บางกะปิ/หัวหมาก/รามคำแหง
+ก|13.7440,100.5340|ปทุมวัน/ราชประสงค์/ลุมพินี
+ก|13.7580,100.5130|ป้อมปราบ/วรจักร
+ก|13.7020,100.6010|พระโขนง/บางจาก
+ก|13.7100,100.6400|อ่อนนุช
+ก|13.8130,100.7300|มีนบุรี
+ก|13.8200,100.7700|สุวินทวงศ์
+ก|13.7700,100.7400|ร่มเกล้า
+ก|13.7220,100.7600|ลาดกระบัง
+ก|13.6960,100.5430|ยานนาวา/ช่องนนทรี
+ก|13.6900,100.5300|พระราม3
+ก|13.7310,100.5130|สัมพันธวงศ์/เยาวราช/สำเพ็ง
+ก|13.7800,100.5420|พญาไท/สะพานควาย/อนุสาวรีย์ชัย
+ก|13.7250,100.4860|ธนบุรี/วงเวียนใหญ่/ตลาดพลู
+ก|13.7230,100.4760|บางกอกใหญ่
+ก|13.7760,100.5790|ห้วยขวาง/รัชดา/สุทธิสาร
+ก|13.7570,100.5650|พระราม9
+ก|13.7300,100.5090|คลองสาน
+ก|13.7770,100.4570|ตลิ่งชัน/ฉิมพลี
+ก|13.7800,100.4300|บรมราชชนนี
+ก|13.7700,100.4680|บางกอกน้อย/ศิริราช/พรานนก
+ก|13.7750,100.4800|ปิ่นเกล้า
+ก|13.6600,100.4350|บางขุนเทียน/ท่าข้าม
+ก|13.6400,100.4400|พระราม2
+ก|13.7140,100.4370|ภาษีเจริญ/บางหว้า
+ก|13.7040,100.3490|หนองแขม
+ก|13.6820,100.5060|ราษฎร์บูรณะ/สุขสวัสดิ์
+ก|13.7930,100.5050|บางพลัด/บางอ้อ/จรัญสนิทวงศ์
+ก|13.7700,100.5530|ดินแดง/ประชาสงเคราะห์
+ก|13.7850,100.6690|บึงกุ่ม/นวมินทร์/เสรีไทย
+ก|13.7080,100.5260|สาทร
+ก|13.8090,100.5370|บางซื่อ/เตาปูน/บางโพ/ประชาชื่น/วงศ์สว่าง
+ก|13.8280,100.5600|จตุจักร/ลาดยาว/หมอชิต/เสนานิคม
+ก|13.6930,100.5030|บางคอแหลม
+ก|13.7170,100.6950|ประเวศ
+ก|13.6800,100.6450|ศรีนครินทร์
+ก|13.7080,100.5840|คลองเตย
+ก|13.7300,100.6510|สวนหลวง/พัฒนาการ
+ก|13.6780,100.4840|จอมทอง/วุฒากาศ/บางมด
+ก|13.9100,100.5900|ดอนเมือง/สรงประภา
+ก|13.7590,100.5340|ราชเทวี/ประตูน้ำ
+ก|13.8030,100.6070|ลาดพร้าว/โชคชัย4
+ก|13.7420,100.5860|วัฒนา/ทองหล่อ/เอกมัย/อโศก
+ก|13.6960,100.4090|บางแค/หลักสอง
+ก|13.8870,100.5790|หลักสี่
+ก|13.8850,100.5650|แจ้งวัฒนะ
+ก|13.8950,100.6600|สายไหม/ออเงิน
+ก|13.8270,100.6780|คันนายาว
+ก|13.7690,100.6850|สะพานสูง/ราษฎร์พัฒนา
+ก|13.7650,100.6050|วังทองหลาง
+ก|13.8600,100.7040|คลองสามวา/สามวา
+ก|13.6680,100.6040|บางนา/อุดมสุข/แบริ่ง
+ก|13.7730,100.3520|ทวีวัฒนา
+ก|13.6110,100.5080|ทุ่งครุ/ประชาอุทิศ
+ก|13.6590,100.3690|บางบอน/เอกชัย
+น|13.8621,100.5144|เมืองนนท์/ศูนย์ราชการนนท์/ตลาดขวัญ/บางกระสอ/บางเขน
+น|13.8420,100.4940|ท่าน้ำนนท์
+น|13.8850,100.5050|สนามบินน้ำ
+น|13.8700,100.5200|ติวานนท์/ท่าทราย
+น|13.8570,100.5400|งามวงศ์วาน
+น|13.8660,100.4900|รัตนาธิเบศร์/ไทรม้า
+น|13.8700,100.4700|บางรักน้อย
+น|13.8350,100.4800|บางศรีเมือง/บางไผ่
+น|13.8050,100.4730|บางกรวย/บางสีทอง/วัดชลอ/มหาสวัสดิ์
+น|13.8300,100.4450|บางขุนกอง/บางขนุน/บางคูเวียง
+น|13.8500,100.4500|ราชพฤกษ์
+น|13.8760,100.4060|บางใหญ่/บางแม่นาง/เสาธงหิน/เวสต์เกต
+น|13.9100,100.4250|บางบัวทอง/โสนลอย/บางคูรัด
+น|13.8850,100.4500|บางรักใหญ่/บางรักพัฒนา
+น|13.9300,100.4000|พิมลราช
+น|13.9500,100.4000|ละหาร
+น|14.0050,100.3200|ไทรน้อย/ราษฎร์นิยม/หนองเพรางาย
+น|13.9130,100.4980|ปากเกร็ด/บางตลาด/ท่าอิฐ/อ้อมเกร็ด/บางตะไนย์/คลองข่อย
+น|13.9120,100.5460|เมืองทองธานี/เมืองทอง
+น|13.9050,100.5300|บางพูด/คลองเกลือ/บ้านใหม่
+น|13.9100,100.4700|เกาะเกร็ด
+น|13.9050,100.5200|แจ้งวัฒนะ
+ป|14.0200,100.5250|เมืองปทุม/บ้านกลาง/บางปรอก
+ป|14.0000,100.5850|บางพูน
+ป|13.9900,100.5450|บางกะดี
+ป|14.0000,100.4900|บางคูวัด
+ป|13.9600,100.6000|หลักหก
+ป|14.0650,100.6450|คลองหลวง/คลองหนึ่ง/ธรรมศาสตร์รังสิต
+ป|14.1100,100.6100|นวนคร
+ป|14.0170,100.7300|ธัญบุรี/บึงยี่โถ/ลำผักกูด
+ป|14.0100,100.6600|ประชาธิปัตย์
+ป|13.9900,100.6300|รังสิต/ฟิวเจอร์พาร์ค
+ป|14.1700,100.8500|หนองเสือ
+ป|14.0400,100.4100|ลาดหลุมแก้ว
+ป|13.9300,100.7500|ลำลูกกา/บึงคำพร้อย/ลำไทร
+ป|13.9500,100.6450|คูคต/ลาดสวาย
+ป|14.0600,100.5300|สามโคก
+ส|13.5990,100.5970|เมืองสมุทรปราการ/ปากน้ำ/ท้ายบ้าน/บางโปรง/บางด้วน
+ส|13.5300,100.6500|บางปู/บางปูใหม่
+ส|13.5800,100.6600|แพรกษา
+ส|13.6200,100.6250|บางเมือง/เทพารักษ์
+ส|13.6460,100.6050|สำโรง/ด่านสำโรง
+ส|13.6050,100.7100|บางพลี/บางโฉลง/หนามแดง
+ส|13.6550,100.6650|บางแก้ว
+ส|13.6480,100.6800|เมกาบางนา
+ส|13.6750,100.7300|ราชาเทวะ/กิ่งแก้ว
+ส|13.6900,100.7500|สุวรรณภูมิ
+ส|13.5800,100.8400|บางบ่อ
+ส|13.4900,100.8200|คลองด่าน
+ส|13.6600,100.5340|พระประแดง/ทรงคนอง/บางหญ้าแพรก
+ส|13.6500,100.5750|ปู่เจ้า
+ส|13.6800,100.5600|บางกระเจ้า
+ส|13.5970,100.5840|พระสมุทรเจดีย์/แหลมฟ้าผ่า/ป้อมพระจุล
+ส|13.6000,100.8000|บางเสาธง
+ค|13.5470,100.2740|มหาชัย/เมืองสมุทรสาคร/ท่าฉลอม/โคกขาม
+ค|13.5800,100.3000|นาดี
+ค|13.6500,100.2600|กระทุ่มแบน/ท่าไม้/สวนหลวง
+ค|13.7000,100.3200|อ้อมน้อย
+ค|13.5900,100.1100|บ้านแพ้ว
+ฐ|13.8200,100.0600|เมืองนครปฐม/องค์พระปฐม
+ฐ|13.7300,100.2200|สามพราน/ยายชา
+ฐ|13.7100,100.2800|อ้อมใหญ่
+ฐ|13.7400,100.2600|ไร่ขิง
+ฐ|13.8000,100.3200|พุทธมณฑล/ศาลายา
+ฐ|13.8000,100.1900|นครชัยศรี
+ฐ|14.0200,100.1700|บางเลน
+ฐ|14.0000,99.9700|กำแพงแสน
+ฐ|13.9600,100.0900|ดอนตูม
+อ|14.2300,100.5800|บางปะอิน
+อ|14.2400,100.7200|วังน้อย
+อ|14.2000,100.4700|บางไทร
+ฉ|13.5000,100.9700|บางปะกง`.split('\n').map(s=>{const p=s.split('|'),c=p[1].split(',');return{pv:p[0],lat:+c[0],lng:+c[1],names:p[2].split('/')}});
+const GEO_HOME=[[13.47,100.02],[14.12,100.92]];
+function geoNorm(s){return String(s||'').replace(/[\s.()\[\],\-_"']/g,'').toLowerCase()}
+function geoLL(lat,lng){lat=+lat;lng=+lng;return lat>12.3&&lat<15.6&&lng>98.8&&lng<102.2?{lat,lng,exact:true}:null}
+// ① พิกัดในลิงก์แผนที่ / พิมพ์พิกัดไว้ในที่อยู่
+function geoLink(u){
+ u=String(u||'');let m;const raw=u;
+ try{u=decodeURIComponent(u)}catch(e){}
+ u=u.replace(/\+/g,' ');
+ // ลิงก์เส้นทาง: เอาปลายทาง (จุดสุดท้าย) ไม่ใช่จุดเริ่ม (มักเป็นร้าน) หรือกลางจอ · ต้องดูก่อนหมุด !3d!4d (ตัวแรก = จุดเริ่ม · 20 ต.ค. จุดงานทับร้าน)
+ if(/[/]dir[/]/.test(u)){
+  // แบ่งส่วนก่อนถอดรหัส: ที่อยู่ "400/110" ในลิงก์เป็น %2F ไม่ใช่ตัวแบ่ง (ถอดก่อน = นับจุดเกิน → หาปลายทางไม่เจอ)
+  const seg=((raw.split('/dir/')[1]||u.split('/dir/')[1]||'').split(/@|\?|\/data=/)[0].split('/').filter(s=>s.replace(/\+/g,' ').trim()));
+  let last=seg[seg.length-1]||'';try{last=decodeURIComponent(last.replace(/\+/g,' '))}catch(e){}
+  if((m=last.match(/^\s*(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})\s*$/)))return geoLL(m[1],m[2]);
+  // จุดในข้อมูลท้ายลิงก์เรียงตามลำดับ (!3d lat!4d lng = สถานที่ · !1d lng!2d lat = พิกัด) · ครบทุกจุดเท่านั้นถึงเชื่อตัวสุดท้าย (ขาด = ตัวสุดท้ายอาจเป็นจุดเริ่ม)
+  const pts=[];let x;const re=/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)|!1d(-?\d{1,3}\.\d+)!2d(-?\d{1,2}\.\d+)/g;
+  while((x=re.exec(u)))pts.push(x[1]?[x[1],x[2]]:[x[4],x[3]]);
+  if(pts.length&&pts.length>=seg.length)return geoLL(pts[pts.length-1][0],pts[pts.length-1][1]);
+  if((m=u.match(/[?&](?:destination|daddr)=(?:loc:)?\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/i)))return geoLL(m[1],m[2]);
+  return null;   // ปลายทางเป็นชื่อสถานที่ไม่มีพิกัด = ถามพิกัด (โปรแกรมร้านตามลิงก์ให้) / ใช้ที่อยู่แทน
+ }
+ if((m=u.match(/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/)))return geoLL(m[1],m[2]);   // หมุดของสถานที่
+ if((m=u.match(/[?&](?:q|query|ll|destination|daddr|center|sll)=(?:loc:)?\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/i)))return geoLL(m[1],m[2]);
+ if((m=u.match(/\/(?:search|place)\/(?:[^/@?]*\/)*?\s*(-?\d{1,2}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})/)))return geoLL(m[1],m[2]);   // /search/13.64, 100.44 · /dir/ร้าน/ปลายทาง
+ if((m=u.match(/(\d{1,2})°\s*(\d{1,2})['′]\s*([\d.]+)["″]?\s*([NS])[\s,]*(\d{1,3})°\s*(\d{1,2})['′]\s*([\d.]+)["″]?\s*([EW])/i))){   // 13°38'29.6"N 100°26'33.4"E
+  const a=(+m[1]+m[2]/60+m[3]/3600)*(/s/i.test(m[4])?-1:1),b=(+m[5]+m[6]/60+m[7]/3600)*(/w/i.test(m[8])?-1:1);
+  const r=geoLL(a,b);if(r)return r;
+ }
+ if((m=u.match(/@(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/)))return geoLL(m[1],m[2]);   // กลางจอแผนที่
+ if((m=u.match(/(1[2-5]\.\d{3,})\s*,\s*(\d{2,3}\.\d{3,})/)))return geoLL(m[1],m[2]);
+ return null;
+}
+// ลิงก์ที่อ่านพิกัดเองไม่ได้ (แบบย่อ maps.app.goo.gl ฯลฯ) → ถามพิกัด (โปรแกรมร้านตามลิงก์ให้ / เว็บใช้ที่โปรแกรมเคยหาไว้) แล้ววาดจุดใหม่
+function geoLinksAsk(){
+ if(!GEO.map||GEO.lb)return;
+ const need={};
+ for(const j of GEO.list){
+  const l=String(j.pickMap||'').trim();
+  if(!/^https?:[/][/]/i.test(l)||geoLink(l)||GEO.lq[l])continue;
+  const p=GEO.ll[j.id];if(p&&p.k===geoKey(j)&&!p.ap)continue;
+  (need[l]=need[l]||[]).push(j.id);
+ }
+ const links=Object.keys(need).slice(0,15);if(!links.length)return;
+ links.forEach(l=>GEO.lq[l]=1);GEO.lb=true;
+ run('api',{action:'links',links}).then(r=>{
+  GEO.lb=false;let n=0;
+  const ll=r&&r.ok&&r.ll||{};
+  for(const l of links){const v=ll[l];if(!v||!geoLL(v.lat,v.lng)){setTimeout(()=>{delete GEO.lq[l]},5*60e3);continue}for(const id of need[l]){const j=J[id];if(j&&String(j.pickMap||'').trim()===l){GEO.ll[id]={k:geoKey(j),lat:+v.lat,lng:+v.lng};n++}}}
+  if(n)geoPaint(GEO.list);else geoLinksAsk();
+ }).catch(()=>{GEO.lb=false;links.forEach(l=>setTimeout(()=>{delete GEO.lq[l]},5*60e3))});
+}
+// ② ③ ชื่อย่าน/ตำบล/อำเภอ หรือจังหวัด ในที่อยู่
+function geoText(s){
+ const t=geoNorm(s);if(!t)return null;
+ const pv=Object.keys(GEO_PROV).filter(k=>GEO_PROV[k][3].split('|').some(a=>t.includes(a)));
+ let best=null;
+ for(const a of GEO_AREAS)for(const n of a.names){
+  const i=t.indexOf(n);if(i<0)continue;
+  const inPv=pv.includes(a.pv)?1:0;
+  if(!best||inPv>best.inPv||(inPv==best.inPv&&(i<best.i||(i==best.i&&n.length>best.n.length))))best={inPv,i,a,n};
+ }
+ if(best&&(!pv.length||best.inPv||best.n.length>=6))return{lat:best.a.lat,lng:best.a.lng,area:best.n,pv:best.a.pv};
+ if(pv.length){const p=GEO_PROV[pv[0]];return{lat:p[1],lng:p[2],area:'',pv:pv[0]}}
+ return null;
+}
+function geoKey(j){return String(j.pick||'')+'|'+String(j.pickMap||'')}
+function geoOf(j){
+ if(!j)return null;
+ const x=geoLink(j.pickMap)||geoLink(j.pick);
+ if(x)return Object.assign(x,{area:'',label:'ตามลิงก์แผนที่'});
+ const g=geoText(j.pick)||(j.drop?null:geoText(j.detail));
+ const label=g?(g.area?g.area+' · ':'')+GEO_PROV[g.pv][0]:'';
+ const p=GEO.ll[j.id];
+ if(p&&p.k===geoKey(j))return{lat:p.lat,lng:p.lng,exact:!p.ap,area:g?g.area:'',label:p.ap?'ประมาณจากที่อยู่':label};   // ตำแหน่งจาก Google / จากลิงก์
+ if(!g)return null;
+ // งานโซนเดียวกันไม่ทับจุดเดียวกัน (เลื่อนนิดหน่อยตามเลขงาน — ที่เดิมทุกครั้ง)
+ let h=0;for(const c of String(j.id))h=(h*31+c.charCodeAt(0))|0;
+ const r=g.area?0.006:0.02;
+ g.lat+=((h&255)/255-.5)*r;g.lng+=(((h>>8)&255)/255-.5)*r;
+ g.label=label;
+ return g;
+}
+// วันของคิว: วันนี้ / พรุ่งนี้ / จ 21 ต.ค. · ยังไม่มีวันนัด = รอนัดวัน
+function geoDay(r){if(HOLD(r))return'รอนัดวัน';const t=TODAY(),tm=bkkDay(Date.now()+864e5);return r.date==t?'วันนี้':r.date==tm?'พรุ่งนี้':fmtD(r.date)}
+function geoMin(m){return m>=60?Math.floor(m/60)+' ชม. '+(m%60)+' นาที':m+' นาที'}
+// เส้นทางแบบย่อของ Google (encoded polyline) → จุด [lat,lng]
+function geoPoly(s){const out=[];let i=0,lat=0,lng=0;s=String(s||'');while(i<s.length){for(let k=0;k<2;k++){let b,sh=0,v=0;do{b=s.charCodeAt(i++)-63;v|=(b&31)<<sh;sh+=5}while(b>=32&&i<s.length);const d=v&1?~(v>>1):v>>1;if(k)lng+=d;else lat+=d}out.push([lat/1e5,lng/1e5])}return out}
+// รถติดไหม: เวลาตอนนี้เทียบเวลาปกติ
+function geoTraffic(min,now){if(!now||!min)return null;const x=now/min;return x<=1.1?['#16a34a','🟢 รถไม่ติด']:x<=1.35?['#ea580c','🟠 รถติดนิดหน่อย']:['#dc2626','🔴 รถติดมาก']}
+let GEO={on:false,map:null,list:[],last:'',hov:'',sel:'',t:0,ll:{},lq:{},lb:false,rt:{},shop:undefined,pick:false,open:false};
+function geoCol(j){const r=cur(j),st=j.status!='open'?j.status:r.st,LV=lvl(j);return LV=='hot'||LV=='late'?'#dc2626':{wait:'#ea580c',ok:'#2563eb',go:'#7c3aed',closed:'#64748b',review:'#ca8a04',cancel:'#6b7280'}[st]||'#2563eb'}
+function geoInit(){
+ try{const P=window.parent;if(P&&P!==window&&P.SHOPPOS_SELFTEST==='1'&&/^#selftest/.test(P.location.hash))return}catch(e){}   // ชุดทดสอบไม่ออกเน็ต
+ if(!window.matchMedia)return;
+ // หน้านี้อาจโหลดไว้ก่อนตอนซ่อนอยู่ (จอกว้าง 0) → รอจนเห็นจอจริงแล้วค่อยโหลดแผนที่ (ครั้งเดียว)
+ const mq=matchMedia('(min-width:900px) and (hover:hover)');
+ const go=()=>{if(!mq.matches||GEO.loading)return;GEO.loading=true;removeEventListener('resize',go);
+  const c=document.createElement('link');c.rel='stylesheet';c.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';c.integrity='sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==';c.crossOrigin='anonymous';document.head.appendChild(c);
+  const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';s.integrity='sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==';s.crossOrigin='anonymous';s.onload=geoStart;document.head.appendChild(s);   // integrity = ไฟล์ถูกแก้ระหว่างทาง ไม่รัน
+ };
+ if(mq.matches)go();else{try{mq.addEventListener('change',go)}catch(e){}addEventListener('resize',go)}
+}
+function geoStart(){
+ if(!window.L||GEO.map)return;
+ try{
+  document.body.classList.add('geoOn');
+  const m=L.map('geoMap',{zoomControl:false,boxZoom:false,keyboard:false,zoomSnap:.25,wheelPxPerZoomLevel:90});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(m);
+  m.attributionControl.setPrefix(false);
+  L.control.zoom({position:'bottomright',zoomInTitle:'ซูมเข้า',zoomOutTitle:'ซูมออก'}).addTo(m);
+  const bt=L.control({position:'bottomright'});
+  bt.onAdd=()=>{const d=L.DomUtil.create('div','geoBtns');d.innerHTML='<button type="button" class="geoBtn" id="geoOnlyBtn" onclick="geoOnly()">🗺 ดูแผนที่อย่างเดียว</button><button type="button" class="geoBtn" id="geoShopBtn" onclick="geoShopPick()">🏠 ตั้งตำแหน่งร้าน</button><button type="button" class="geoBtn" onclick="geoOverview()">🧭 ภาพรวม</button><button type="button" class="geoBtn" id="geoCloseBtn" onclick="geoClose()">✕ ปิดแผนที่</button>';L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);return d};
+  bt.addTo(m);
+  m.on('click',e=>{if(GEO.pick)geoShopTry(e.latlng.lat,e.latlng.lng)});
+  m.on('movestart',()=>{GEO.moving=true}).on('moveend',()=>{GEO.moving=false});
+  GEO.map=m;GEO.pins=L.layerGroup().addTo(m);GEO.on=true;
+  geoMode();
+  geoFit(false);
+  geoPaint(GEO.list);
+  run('api',{action:'shop'}).then(r=>{if(r&&r.ok){GEO.shop=r.shop||null;geoShopDraw()}}).catch(()=>{});
+ }catch(e){document.body.classList.remove('geoOn')}
+}
+// จุดของงานที่อยู่ในรายการตอนนี้: วัน เวลา ชื่อ (สีตามสถานะ) · กด = เลื่อนไปการ์ด
+function geoPaint(list){
+ GEO.list=list||[];
+ if(!GEO.map)return;
+ GEO.pins.clearLayers();
+ for(const j of GEO.list){
+  const g=geoOf(j);if(!g)continue;
+  const r=cur(j),c=geoCol(j),d=geoDay(r),nm=String(j.name||'').replace(/\s*\(.*$/,'').slice(0,16);
+  L.marker([g.lat,g.lng],{keyboard:false,icon:L.divIcon({className:'geoPin',iconSize:[0,0],html:`<i style="--gc:${c}"></i><b class="${d=='วันนี้'?'td':''}" style="--gc:${c}"><u>${esc(d)}</u> ${esc(HOLD(r)?'':r.from||'')} · ${esc(nm)}</b>`})}).on('click',()=>geoGoCard(j.id)).addTo(GEO.pins);
+ }
+ geoLinksAsk();
+}
+function geoGoCard(id){if(GEO.pick)return;GEO.sel=id;if(document.body.classList.contains('geoOnly')){geoFocus(id);return}const el=document.querySelector('[data-gid="'+CSS.escape(id)+'"]');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>geoFocus(id),450)}else geoFocus(id)}
+function geoShopDraw(){
+ if(!GEO.map)return;
+ if(GEO.sm){GEO.sm.remove();GEO.sm=null}
+ const s=GEO.shop,b=$('geoShopBtn');
+ if(b)b.classList.toggle('need',!s);
+ if(s)GEO.sm=L.marker([s.lat,s.lng],{interactive:false,keyboard:false,zIndexOffset:1000,icon:L.divIcon({className:'geoShop',iconSize:[0,0],html:'<i>🏠</i><b>'+esc(s.name||'ร้านเรา')+'</b>'})}).addTo(GEO.map);
+}
+// ตั้งตำแหน่งร้าน: คลิกบนแผนที่ (ลาก/ซูมหาได้) หรือวางลิงก์ Google Maps ที่มีพิกัด → ยืนยัน → เก็บบนเว็บ
+function geoShopPick(){
+ GEO.pick=true;GEO.last='';geoClear();geoHi(null);document.body.classList.add('geoPick');geoMode();
+ const b=$('geoInfo');b.hidden=false;geoPill('');
+ b.innerHTML=`<b>🏠 ตั้งตำแหน่งร้าน</b><div class="gi">คลิกบนแผนที่ตรงที่ตั้งร้าน (ลาก/ซูมหาได้)</div>
+ <div class="gi mu">หรือวางลิงก์ Google Maps ที่มีพิกัด (เช่น …/@13.86,100.45,17z)</div>
+ <div class="gr"><input id="geoLinkIn" placeholder="วางลิงก์ Google Maps"><button type="button" class="btn g sm" onclick="geoShopLink()">ใช้ลิงก์</button></div>
+ <div class="gr"><input id="geoShopName" maxlength="40" placeholder="ชื่อที่แสดง เช่น ร้าน สาขา 4" value="${esc(GEO.shop&&GEO.shop.name||'ร้านเรา')}"><button type="button" class="btn o sm" onclick="geoShopCancel()">ยกเลิก</button></div>
+ <div id="geoShopOk"></div>`;
+}
+function geoShopCancel(){GEO.pick=false;GEO.cand=null;document.body.classList.remove('geoPick');if(GEO.tm){GEO.tm.remove();GEO.tm=null}$('geoInfo').hidden=true;GEO.open=true;geoMode()}   // ตั้งร้านเสร็จ/ยกเลิก = ยังดูแผนที่ต่อ
+function geoShopLink(){const g=geoLink($('geoLinkIn').value);if(!g){alertBox('ลิงก์นี้ไม่มีพิกัด — เปิดร้านใน Google Maps บนคอม แล้วคัดลอกที่อยู่จากแถบด้านบน (ที่มี @13.xx,100.xx) หรือคลิกบนแผนที่ตรงร้านแทน');return}geoShopTry(g.lat,g.lng);GEO.map.setView([g.lat,g.lng],16)}
+function geoShopTry(lat,lng){
+ GEO.cand={lat,lng};
+ if(GEO.tm)GEO.tm.remove();
+ GEO.tm=L.marker([lat,lng],{interactive:false,keyboard:false,zIndexOffset:1100,icon:L.divIcon({className:'geoShop cand',iconSize:[0,0],html:'<i>🏠</i><b>ตรงนี้?</b>'})}).addTo(GEO.map);
+ $('geoShopOk').innerHTML='<div class="gr"><button type="button" class="btn g" onclick="geoShopSave()">✔ บันทึกตำแหน่งร้านตรงนี้</button></div><div class="gi mu">ยังไม่ใช่ = คลิกที่อื่นบนแผนที่</div>';
+}
+async function geoShopSave(){
+ const c=GEO.cand;if(!c)return;
+ const name=(($('geoShopName')||{}).value||'').trim()||'ร้านเรา';
+ let r;
+ try{r=await run('api',{action:'setShop',by:ME,p:{lat:c.lat,lng:c.lng,name}})}catch(e){r={ok:false,error:msg(e)}}
+ if(!r||!r.ok){alertBox('บันทึกตำแหน่งร้านไม่สำเร็จ: '+(r&&r.error||'ต่อเน็ตไม่ได้'));return}
+ GEO.shop=r.shop;GEO.rt={};
+ geoShopCancel();geoShopDraw();
+}
+function geoClear(){for(const k of['fm','zc','ln','ln2','dm','tp','tp2'])if(GEO[k]){GEO[k].remove();GEO[k]=null}}
+// งานขนย้าย: มีจุดส่ง = เดินทาง ร้าน → จุดรับ → จุดส่ง
+const geoHasDrop=j=>!!(String(j.drop||'').trim()||/^https?:[/][/]/i.test(String(j.dropMap||'').trim()));
+const geoDropKey=j=>String(j.drop||'').trim()+'|'+String(j.dropMap||'').trim();
+function geoDropTo(j){const d=geoLink(j.dropMap);return d?{lat:d.lat,lng:d.lng,exact:true}:{addr:String(j.drop||'').trim().slice(0,300),link:String(j.dropMap||'').trim().slice(0,2000)}}
+function geoMark(j,g){
+ const col=geoCol(j);
+ if(!g.exact)GEO.zc=L.circle([g.lat,g.lng],{radius:g.area?1800:9000,color:col,weight:3,opacity:.9,fillColor:col,fillOpacity:.18,interactive:false}).addTo(GEO.map);
+ GEO.fm=L.marker([g.lat,g.lng],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:'geoFocus',iconSize:[0,0],html:`<i style="--gc:${col}"></i>`})}).addTo(GEO.map);
+}
+// ขอบขวาของรายการ: ตอนแผนที่เปิดใช้ตำแหน่งปลายทาง (รายการกำลังเลื่อนไปชิดซ้ายอยู่ = ตำแหน่งตอนนี้ยังไม่ใช่)
+function geoListRight(){const b=document.body;if(b.classList.contains('geoOnly'))return 0;if(b.classList.contains('geoAct')&&!b.classList.contains('calw'))return 16+Math.min(600,innerWidth*.55);return document.querySelector('.wrap').getBoundingClientRect().right}
+// ช่องว่างข้างรายการ (จอกว้าง) ไว้วางสิ่งที่จะดู · top = เว้นที่ด้านบน (ป้ายเหนือจุดงาน) · ดูแผนที่อย่างเดียว = เว้นขวาให้กล่องข้อมูล
+function geoPad(top){
+ if(document.body.classList.contains('geoOnly'))return{paddingTopLeft:[40,Math.max(top,90)],paddingBottomRight:[390,40]};
+ const r=geoListRight(),rt=innerWidth-r;return{paddingTopLeft:[rt>=280?r+40:30,Math.max(top,90)],paddingBottomRight:[250,150]};   // ขวาล่าง = ปุ่มแผนที่ + ชื่องานข้างจุด
+}
+// กล่องข้อมูลขวาบนเฉพาะ "ดูแผนที่อย่างเดียว" (ไม่มีรายการให้ดู) · มีรายการอยู่ซ้าย = ป้ายบนแผนที่แทน (20 ต.ค.: กล่องขวาซ้ำกับการ์ดทางซ้าย บังแผนที่)
+const geoBoxOn=()=>document.body.classList.contains('geoOnly');
+function geoPill(t,warn){const p=$('geoPill');if(!p)return;if(!t){p.hidden=true;return}p.innerHTML=t;p.classList.toggle('warn',!!warn);const r=geoListRight();p.style.left=Math.round(r+(innerWidth-r)/2)+'px';p.hidden=false}
+// ป้ายเหนือจุดงาน: ระยะทาง · เวลาตอนนี้ · รถติดไหม · ถึงกี่โมง · งานขนย้าย = ป้ายที่จุดส่งอีกอัน (ช่วงที่ 2 + รวม)
+function geoTips(j,g,res,res2){
+ for(const x of['tp','tp2'])if(GEO[x]){GEO[x].remove();GEO[x]=null}
+ if(!GEO.map||!res||!res.ok)return;
+ const at=res.end&&geoLL(res.end.lat,res.end.lng)?[+res.end.lat,+res.end.lng]:g?[g.lat,g.lng]:null;
+ if(!at)return;
+ const tip=(ll,h)=>L.tooltip({permanent:true,direction:'top',offset:[0,-16],className:'geoTip',interactive:false,opacity:1}).setLatLng(ll).setContent(h).addTo(GEO.map);
+ const line=(r,lab)=>(lab?`<span class="lg" style="--c:${lab[1]}">${lab[0]}</span> `:'🚚 ')+`<b>${esc(r.km)} กม.</b> · ${geoMin(r.now||r.min)}`;
+ const traf=r=>{const tr=geoTraffic(r.min,r.now);return tr?`<span style="color:${tr[0]}">${tr[1]}</span>${r.now>r.min?' (ปกติ '+geoMin(r.min)+')':''} · `:''};
+ const mv=geoHasDrop(j)&&res2&&res2.ok,t1=Date.now()+(res.now||res.min)*6e4;
+ GEO.tp=tip(at,line(res,mv?['① ร้าน → จุดรับ','#16a34a']:null)+`<div class="mu">${traf(res)}ถึง${mv?'จุดรับ':''} ~${hm(t1)} น.${res.approx?' · ⚠ ตำแหน่งประมาณ':''}</div>`);
+ if(mv&&res2.end&&geoLL(res2.end.lat,res2.end.lng)){
+  const t2=t1+(res2.now||res2.min)*6e4,km=Math.round((Number(res.km)+Number(res2.km))*10)/10;
+  GEO.tp2=tip([+res2.end.lat,+res2.end.lng],line(res2,['② จุดรับ → จุดส่ง','#7c3aed'])+`<div class="mu">${traf(res2)}ถึงจุดส่ง ~${hm(t2)} น. · รวม ${km} กม.</div>`);
+ }
+}
+// เส้นทางค่อย ๆ ลากจากร้านไปหางาน · แผนที่กำลังบินอยู่ = รอให้หยุดก่อน (ซูมระหว่างลาก = เส้นเพี้ยน)
+function geoDraw(pl,delay,tries){
+ const p=pl&&pl.getElement&&pl.getElement();if(!p||!p.getTotalLength)return;
+ if(GEO.moving&&(tries||0)<40){p.style.opacity='0';setTimeout(()=>geoDraw(pl,delay,(tries||0)+1),50);return}
+ try{
+  const n=p.getTotalLength();p.style.transition='none';p.style.strokeDasharray=n+' '+n;p.style.strokeDashoffset=String(n);p.style.opacity='';p.getBoundingClientRect();
+  p.style.transition='stroke-dashoffset .9s ease-in-out '+(delay||0)+'s';p.style.strokeDashoffset='0';
+  const end=()=>{p.style.transition='';p.style.strokeDasharray='';p.style.strokeDashoffset=''};
+  p.addEventListener('transitionend',end,{once:true});setTimeout(end,(1.3+(delay||0))*1000);
+ }catch(e){p.style.opacity=''}
+}
+function geoFocus(id){
+ GEO.last=id;
+ const j=J[id];
+ if(!GEO.map||!j||GEO.pick)return;
+ const opened=geoMode();
+ geoClear();
+ GEO.mk=geoKey(j)+'#'+geoCol(j);
+ const el=document.querySelector('[data-gid="'+CSS.escape(id)+'"]');
+ geoHi(el);
+ if(opened&&el)el.scrollIntoView({block:'nearest'});   // รายการเพิ่งเลื่อนชิดซ้าย = การ์ดที่กดยังอยู่ในจอ
+ const g=geoOf(j),s=GEO.shop;
+ if(g){
+  geoMark(j,g);
+  // บินไปหางานแบบนุ่ม ๆ (เดิมกระโดดทันที) · แผนที่เพิ่งเด้งขึ้น = รอให้จางเข้า + รายการเลื่อนชิดซ้ายก่อน แล้วค่อยบิน
+  const fly=()=>{if(GEO.last!==id||!GEO.map)return;
+   if(s)GEO.map.flyToBounds([[s.lat,s.lng],[g.lat,g.lng]],Object.assign({maxZoom:g.exact?15:13.5,duration:.9,easeLinearity:.2},geoPad(190)));
+   else GEO.map.flyToBounds(L.latLng(g.lat,g.lng).toBounds(g.exact?1500:5000),Object.assign({duration:.9,easeLinearity:.2},geoPad(190)));
+  };
+  if(opened){GEO.moving=true;setTimeout(fly,250)}else fly();
+ }
+ geoRoute(j,g);
+}
+// หน้าต่างเล็กขวาบน: รายละเอียดเฉพาะงานที่เลือก (กด "รายละเอียด / ประวัติ" = หน้าต่างเต็มแบบเดิม)
+function geoHead(j,g){
+ const r=cur(j),st=j.status!='open'?j.status:r.st,col=geoCol(j);
+ const lb={wait:'⚠ ยังไม่คอนเฟิร์ม',ok:'คอนเฟิร์มแล้ว',go:'🚚 กำลังไป',done:'เสร็จรอบนี้',closed:'✅ เสร็จแล้ว',review:'🔍 รอตรวจสอบ',cancel:'ยกเลิก'}[st]||'';
+ const tel=String(j.tel||'').trim();
+ return `<div class="gtop"><span class="gst" style="--t:${col}">${esc(lb)}</span>${j.urgent?'<span class="gst" style="--t:#dc2626">🚨 ด่วน</span>':''}<span class="gid">${esc(j.id)}</span><button type="button" class="gx" onclick="geoHome()" title="ปิด (Esc)">✕</button></div>`
+  +(GEO.sel===j.id&&!document.body.classList.contains('geoOnly')?'<div class="gsel">📌 เลือกงานนี้อยู่ · คลิกการ์ดอีกครั้ง = ปิดแผนที่</div>':'')
+  +`<b>${esc(j.name)}</b>${tel?` <a class="gtel" href="tel:${esc(tel.replace(/[^\d+]/g,''))}">📞 ${esc(tel)}</a>`:''}`
+  +`<div class="gi">📅 <b>${esc(geoDay(r))}${HOLD(r)?'':' '+esc(win(r))}</b> · ${esc(j.type||'')}${j.rounds.length>1?' · รอบ '+r.no+'/'+j.rounds.length:''}</div>`
+  +(j.pick?`<div class="gi">📍 ${esc(j.pick)}${g&&g.label&&g.label!=='ตามลิงก์แผนที่'?' <span class="mu">('+esc(g.label)+')</span>':''}</div>`:'')
+  +(j.drop?`<div class="gi">🍀 ส่งที่ ${esc(j.drop)}</div>`:'')
+  +(j.note?`<div class="gi gwarn">⚠ ${esc(j.note)}</div>`:'')
+  +(j.detail?`<div class="gdet">${esc(j.detail)}</div>`:'')
+  +`<div class="gi">💰 <b>${fmt(tPrice(j))} ฿</b>${trk(r)?' · 🚛 '+trk(r):''}</div>`;
+}
+function geoFoot(j){const mv=geoHasDrop(j);return `<div class="gacts"><button type="button" class="btn sm" onclick="detail(${jsa(j.id)})">📋 รายละเอียด / ประวัติ</button>${j.pickMap||j.pick?`<a class="btn sm o" href="${esc(mapUrl(j.pick,j.pickMap))}" target="_blank">🧭 นำทาง${mv?'ไปจุดรับ':''}</a>`:''}${mv?`<a class="btn sm o" href="${esc(mapUrl(j.drop,j.dropMap))}" target="_blank">🏁 นำทางไปจุดส่ง</a>`:''}</div>`}
+// กล่องขวาบน: วัน-เวลานัด + เส้นทางจากร้าน (Google) ระยะทาง / เวลาปกติ / เวลาตอนนี้ · จำผลไว้ 10 นาทีต่องาน
+function geoRtInfo(res){
+ const tr=geoTraffic(res.min,res.now),now=res.now||res.min,late=res.now?res.now-res.min:0;
+ return `<div class="gk"><div><span>ระยะทาง</span><b>${esc(res.km)} กม.</b></div><div><span>ปกติ</span><b>${geoMin(res.min)}</b></div><div><span>ตอนนี้</span><b style="color:${tr?tr[0]:'inherit'}">${res.now?geoMin(res.now):'—'}</b></div></div>`
+  +(tr?`<div class="tr" style="--t:${tr[0]}">${tr[1]}${late>0?' · ช้ากว่าปกติ '+late+' นาที':''}</div>`:'')
+  +(res.approx?'<div class="gi gwarn">⚠ ตำแหน่งงานประมาณจากที่อยู่ (อ่านพิกัดจากลิงก์แผนที่ไม่ได้)</div>':res.byLink?'<div class="gi mu">📍 ตำแหน่งตามชื่อสถานที่ในลิงก์แผนที่</div>':'')
+  +`<div class="gi mu">ออกจากร้านตอนนี้ ถึงประมาณ ${hm(Date.now()+now*6e4)} น. · คำนวณจาก Google</div>`;
+}
+// งานขนย้าย: รวม 2 ช่วง (ร้าน → จุดรับ → จุดส่ง) · ช่วงที่ 2 หาไม่ได้ = บอกช่วงแรกตามเดิม + เหตุผล
+function geoRt2Info(a,b){
+ if(!b)return geoRtInfo(a)+'<div class="glegs"><div class="mu"><i style="--c:#7c3aed">②</i> จุดรับ → จุดส่ง <b>กำลังคำนวณ…</b></div></div>';
+ if(!b.ok)return geoRtInfo(a)+`<div class="glegs"><div class="bad"><i style="--c:#7c3aed">②</i> จุดรับ → จุดส่ง: ${esc(b.error||'คำนวณไม่ได้')}</div></div>`;
+ const m1=a.now||a.min,m2=b.now||b.min,min=a.min+b.min,now=m1+m2,has=!!(a.now||b.now),tr=geoTraffic(min,has?now:null),late=has?now-min:0;
+ const km=Math.round((Number(a.km)+Number(b.km))*10)/10,t1=Date.now()+m1*6e4,t2=t1+m2*6e4;
+ const ap=a.approx&&b.approx?'จุดรับและจุดส่ง':a.approx?'จุดรับ':b.approx?'จุดส่ง':'';
+ return `<div class="gk"><div><span>ระยะทางรวม</span><b>${km} กม.</b></div><div><span>ปกติ</span><b>${geoMin(min)}</b></div><div><span>ตอนนี้</span><b style="color:${tr?tr[0]:'inherit'}">${has?geoMin(now):'—'}</b></div></div>`
+  +`<div class="glegs"><div><i style="--c:#16a34a">①</i> ร้าน → จุดรับ<b>${esc(a.km)} กม. · ${geoMin(m1)}</b></div><div><i style="--c:#7c3aed">②</i> จุดรับ → จุดส่ง<b>${esc(b.km)} กม. · ${geoMin(m2)}</b></div></div>`
+  +(tr?`<div class="tr" style="--t:${tr[0]}">${tr[1]}${late>0?' · ช้ากว่าปกติ '+late+' นาที':''}</div>`:'')
+  +(ap?`<div class="gi gwarn">⚠ ตำแหน่ง${ap}ประมาณจากที่อยู่ (อ่านพิกัดจากลิงก์แผนที่ไม่ได้)</div>`:'')
+  +`<div class="gi mu">ออกจากร้านตอนนี้ ถึงจุดรับ ~${hm(t1)} น. · ถึงจุดส่ง ~${hm(t2)} น. (ยังไม่รวมเวลาขนของ) · คำนวณจาก Google</div>`;
+}
+function geoRtErr(res){return res&&res.far?`<div class="gi gwarn">⚠ ${esc(res.error)}</div>`:`<div class="gi mu">คำนวณเส้นทางไม่ได้: ${esc(res&&res.error||'ต่อเน็ตไม่ได้')}</div>`}
+function geoRtErrTxt(res){return res&&res.far?'⚠ '+esc(res.error):'คำนวณเส้นทางไม่ได้: '+esc(res&&res.error||'ต่อเน็ตไม่ได้')}
+// soft = วาดรายการใหม่ (ทุกนาที): เปลี่ยนแค่ตัวหนังสือจากที่จำไว้ ไม่ถามใหม่ ไม่วาดเส้นใหม่ ไม่ขยับแผนที่ที่ผู้ใช้ลาก/ซูมอยู่
+async function geoRoute(j,g,soft){
+ const id=j.id,box=$('geoInfo');
+ const head=geoHead(j,g),foot=geoFoot(j);
+ const say=(mid,pill,warn)=>{box.innerHTML=head+mid+foot;geoPill(pill,warn)};   // กล่องขวา (ดูแผนที่อย่างเดียว) + ป้ายเล็กบนแผนที่ (มีรายการอยู่ซ้าย)
+ box.hidden=!geoBoxOn();
+ if(GEO.shop===undefined&&!soft){try{const sr=await run('api',{action:'shop'});if(sr&&sr.ok){GEO.shop=sr.shop||null;geoShopDraw()}}catch(e){}if(GEO.last!==id)return}
+ if(GEO.shop===undefined){say('<div class="gi mu">ยังโหลดตำแหน่งร้านไม่ได้ (ต่อเว็บไม่ได้) — เลือกงานอีกครั้งเพื่อลองใหม่</div>','ยังโหลดตำแหน่งร้านไม่ได้ (ต่อเว็บไม่ได้) — คลิกงานอีกครั้งเพื่อลองใหม่',true);return}
+ if(!GEO.shop){const t=(g?'':'ยังหาตำแหน่งงานนี้ไม่ได้ · ')+'กด 🏠 ตั้งตำแหน่งร้าน (มุมขวาล่าง) จะเห็นเส้นทาง + เวลาเดินทาง';say(`<div class="gi mu">${t}</div>`,t,true);return}
+ if(!g&&!String(j.pick||'').trim()&&!/^https?:[/][/]/i.test(String(j.pickMap||'').trim())){say('<div class="gi mu">งานนี้ไม่มีที่อยู่ / ลิงก์แผนที่</div>','งานนี้ไม่มีที่อยู่ / ลิงก์แผนที่',true);return}
+ const k=geoKey(j),c=GEO.rt[id],mv=geoHasDrop(j),k2=k+'>'+geoDropKey(j),c2=(GEO.rt2||{})[id];
+ if(soft){
+  const stale2=mv&&c&&c.k===k&&c.res&&c.res.ok&&!(c2&&c2.k===k2);   // จุดส่งเปลี่ยน = ถามช่วงที่ 2 ใหม่
+  if(c&&c.k===k&&!stale2){
+   if(c.res&&c.res.ok){say(mv?geoRt2Info(c.res,c2.res):geoRtInfo(c.res),'');if(!GEO.tp)geoTips(j,g,c.res,c2&&c2.res)}
+   else say(geoRtErr(c.res),geoRtErrTxt(c.res),true);
+   return;
+  }
+  if(!c)return;
+  soft=false;   // ที่อยู่/ลิงก์เปลี่ยน = ถามใหม่ด้านล่าง
+ }
+ let res=c&&c.k===k&&c.res&&c.res.ok&&Date.now()-c.at<6e5?c.res:null;
+ if(!res){
+  say('<div class="gi mu">กำลังคำนวณเส้นทาง…</div>','⏳ กำลังคำนวณเส้นทาง…');
+  try{res=await run('api',{action:'route',to:g&&g.exact?{lat:g.lat,lng:g.lng,exact:true}:{addr:String(j.pick||'').trim().slice(0,300)||(g&&g.area?g.area+' '+GEO_PROV[g.pv][0]:''),link:String(j.pickMap||'').trim().slice(0,2000)}})}catch(e){res={ok:false,error:msg(e)}}
+  GEO.rt[id]={k,at:Date.now(),res};   // จำทั้งที่ได้/ไม่ได้ (วาดใหม่ไม่ถามซ้ำ · คลิกเลือกใหม่ = ถามใหม่ถ้าไม่ได้)
+ }
+ if(GEO.last!==id||!GEO.map)return;
+ if(!res||!res.ok){say(geoRtErr(res),geoRtErrTxt(res),true);return}
+ if(res.end&&!(g&&g.exact)&&geoLL(res.end.lat,res.end.lng)){   // ตำแหน่งจากที่อยู่ (Google) → ย้ายจุด · มีลิงก์แต่อ่านไม่ได้ = จุดประมาณ (ยังลองลิงก์ต่อ)
+  const ap=!!res.approx&&!res.byLink&&/^https?:[/][/]/i.test(String(j.pickMap||'').trim());   // ตามชื่อสถานที่ในลิงก์ = ใช้ได้เลย ไม่ต้องถามพิกัดลิงก์ซ้ำ
+  GEO.ll[id]={k,lat:+res.end.lat,lng:+res.end.lng,ap};
+  geoClear();geoMark(j,geoOf(j));geoPaint(GEO.list);
+ }
+ // งานขนย้าย: ช่วงที่ 2 จุดรับ → จุดส่ง (เริ่มจากปลายช่วงแรก) · จำไว้ 10 นาทีเหมือนช่วงแรก
+ let res2=null;
+ if(mv){
+  GEO.rt2=GEO.rt2||{};
+  const d=GEO.rt2[id];
+  res2=d&&d.k===k2&&d.res&&d.res.ok&&Date.now()-d.at<6e5?d.res:null;
+  if(!res2){
+   say(geoRt2Info(res,null),'⏳ กำลังคำนวณช่วงจุดรับ → จุดส่ง…');
+   const from=res.end&&geoLL(res.end.lat,res.end.lng)?{lat:+res.end.lat,lng:+res.end.lng}:g&&g.exact?{lat:g.lat,lng:g.lng}:null;
+   if(!from)res2={ok:false,error:'ไม่รู้ตำแหน่งจุดรับ'};
+   else{try{res2=await run('api',{action:'route',from,to:geoDropTo(j)})}catch(e){res2={ok:false,error:msg(e)}}}
+   GEO.rt2[id]={k:k2,at:Date.now(),res:res2};
+   if(GEO.last!==id||!GEO.map)return;
+  }
+ }
+ const pts=geoPoly(res.poly);
+ for(const x of['ln','ln2','dm'])if(GEO[x]){GEO[x].remove();GEO[x]=null}
+ GEO.ln=pts.length>1?L.polyline(pts,{color:'#16a34a',weight:6,opacity:.85,interactive:false}).addTo(GEO.map):null;
+ geoDraw(GEO.ln,0);
+ if(res2&&res2.ok){
+  const p2=geoPoly(res2.poly);
+  GEO.ln2=p2.length>1?L.polyline(p2,{color:'#7c3aed',weight:6,opacity:.8,interactive:false}).addTo(GEO.map):null;
+  geoDraw(GEO.ln2,.8);
+  if(res2.end&&geoLL(res2.end.lat,res2.end.lng))GEO.dm=L.marker([+res2.end.lat,+res2.end.lng],{interactive:false,keyboard:false,zIndexOffset:950,icon:L.divIcon({className:'geoDrop',iconSize:[0,0],html:'<i>🏁</i><b>จุดส่ง</b>'})}).addTo(GEO.map);
+ }
+ const bb=GEO.ln?GEO.ln.getBounds():null;
+ if(bb&&GEO.ln2)bb.extend(GEO.ln2.getBounds());
+ if(bb&&GEO.ln2){   // งานขนย้าย: เห็นทั้ง 2 ช่วง (ร้าน → จุดรับ → จุดส่ง) ในช่องระหว่างรายการกับกล่องข้อมูล
+  GEO.map.flyToBounds(bb,Object.assign({duration:.8,easeLinearity:.2},geoPad(190)));   // บน = แถบหัว + ป้ายเหนือจุด
+ }else if(bb&&!GEO.map.getBounds().contains(bb))GEO.map.flyToBounds(bb,Object.assign({duration:.8,easeLinearity:.2},geoPad(190)));   // เส้นทางล้นจอเท่านั้นถึงขยับอีก
+ say(mv?geoRt2Info(res,res2):geoRtInfo(res),'');
+ geoTips(j,g,res,res2);
+}
+// ยกเลิกงานที่เลือก: เปิดแผนที่ไว้เอง (ดูแผนที่งาน/ภาพรวม) = กลับภาพรวม · มาจากกดการ์ด = ปิดแผนที่ รายการกลับกลางจอ
+function geoHome(){
+ clearTimeout(GEO.ut);
+ GEO.last='';GEO.hov='';GEO.sel='';   // ชี้การ์ดเดิมอีกครั้ง = ไปงานนั้นใหม่
+ if(!GEO.map)return;
+ geoClear();geoHi(null);geoPill('');
+ if(!GEO.pick)$('geoInfo').hidden=true;
+ const act=document.body.classList.contains('geoAct');
+ geoMode();
+ geoFit(act&&document.body.classList.contains('geoAct'));
+}
+// แผนที่เด้งขึ้นเมื่อ: เลือกงาน · ตั้งตำแหน่งร้าน · ดูแผนที่อย่างเดียว · กดดูแผนที่งาน/ภาพรวมเอง · คืน true = เพิ่งเปิด
+function geoMode(){
+ const b=document.body,was=b.classList.contains('geoAct');
+ const on=!!(GEO.map&&(GEO.last||GEO.pick||GEO.open||b.classList.contains('geoOnly')));
+ b.classList.toggle('geoAct',on);
+ if(on&&!was&&GEO.map)GEO.map.invalidateSize();
+ return on&&!was;
+}
+function geoOpenMap(){if(!GEO.map)return;GEO.open=true;geoMode();geoFit(false)}
+function geoOverview(){GEO.open=true;geoHome()}
+function geoClose(){
+ if(GEO.pick)geoShopCancel();
+ GEO.open=false;
+ if(document.body.classList.contains('geoOnly'))geoOnly();
+ geoHome();
+}
+addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('geoAct')&&!document.querySelector('#m.on,#cf.on,#zm.on,#al.on,#busy.on'))geoClose()});
+// ดูแผนที่อย่างเดียว: ซ่อนหัว + รายการ (กดอีกครั้ง = แสดงรายการงาน) · กดจุดงาน = ดูงานนั้นในกล่องขวาบน
+function geoOnly(){
+ const on=!document.body.classList.contains('geoOnly');
+ document.body.classList.toggle('geoOnly',on);
+ if(on)GEO.open=true;
+ geoMode();
+ const b=$('geoOnlyBtn');if(b)b.textContent=on?'📋 แสดงรายการงาน':'🗺 ดูแผนที่อย่างเดียว';
+ if(!GEO.map)return;
+ GEO.map.invalidateSize();
+ if(GEO.last)geoFocus(GEO.last);else geoFit(true);
+}
+// วาดรายการใหม่แล้ว: งานที่เลือกถูกลบ = กลับภาพรวม · ยังอยู่ = กรอบการ์ด + กล่องข้อมูลเป็นฉบับล่าสุด (เส้นทางใช้ที่จำไว้)
+function geoRefresh(){
+ if(!GEO.map||!GEO.last||GEO.pick)return;
+ const j=J[GEO.last];
+ if(!j){geoHome();return}
+ geoHi(document.querySelector('[data-gid="'+CSS.escape(GEO.last)+'"]'));
+ const g=geoOf(j),mk=geoKey(j)+'#'+geoCol(j);
+ if(mk!==GEO.mk){GEO.mk=mk;geoClear();if(g)geoMark(j,g)}   // ที่อยู่/ลิงก์/สถานะเปลี่ยน → ย้ายจุด + วง + ลบเส้นเก่า
+ geoRoute(j,g,true);
+}
+// การ์ดที่ชี้อยู่มีกรอบสีเดียวกับจุดบนแผนที่
+function geoHi(el){document.querySelectorAll('.geoHi,.geoSel').forEach(x=>{if(x!==el)x.classList.remove('geoHi','geoSel')});if(el){el.classList.add('geoHi');el.classList.toggle('geoSel',GEO.sel===el.dataset.gid)}}
+// ภาพรวม กทม. + ปริมณฑล วางในช่องว่างข้างรายการ
+function geoFit(anim){if(anim)GEO.map.flyToBounds(GEO_HOME,Object.assign({duration:.8,easeLinearity:.2},geoPad(40)));else GEO.map.fitBounds(GEO_HOME,Object.assign({animate:false},geoPad(40)))}
+addEventListener('resize',()=>{if(GEO.map&&!GEO.last)geoFit(false)});
+// คลิกการ์ด (ที่ไม่ใช่ปุ่ม/ลิงก์/รูป) = เลือกงานนั้น · คลิกการ์ดเดิมซ้ำ = ยกเลิก กลับภาพรวม
+document.addEventListener('click',e=>{
+ const t=e.target;if(!t||!t.closest||GEO.pick)return;
+ const c=t.closest('[data-gid]');if(!c||t.closest('button,a,input,select,textarea,label,img,.more,.selck,.cev'))return;
+ if(e.detail>1||String(getSelection&&getSelection()||'').trim()){clearTimeout(GEO.ut);return}   // ดับเบิลคลิก/ลากเลือกตัวหนังสือ (คัดลอกที่อยู่/เบอร์)
+ const id=c.dataset.gid;
+ clearTimeout(GEO.ut);
+ if(GEO.sel===id){GEO.ut=setTimeout(()=>{if(GEO.sel===id&&!String(getSelection()||'').trim())geoHome()},350);return}   // คลิกที่เลือกอยู่ซ้ำ = ยกเลิก (รอดูก่อนว่าไม่ใช่ดับเบิลคลิก)
+ GEO.sel=id;geoFocus(id);
+});
+// กล่องตัวเลขด้านบน = ตัวกรอง (แทนแท็บวันนี้) · กดอีกครั้ง = กลับไปดูงานที่ยังไม่ปิด
+function stTab(k){TAB=TAB==k?'active':k;render()}
+
+geoInit();
+function render(){
+ $('who').textContent='\uD83D\uDC64 '+(ME||'เลือกชื่อผู้ใช้');
+ const nRev=Object.values(J).filter(j=>j.status=='review').length;
+ $('tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<div class="tab ${k==TAB?'on':''}" onclick="TAB='${k}';render()">${v}${k=='review'&&nRev?` <b style="background:var(--am);color:#fff;border-radius:20px;padding:0 7px">${nRev}</b>`:''}</div>`).join('')+(TAB=='cal'||TAB=='sum'?'':`<div class="tab" style="color:var(--r)" onclick="selMode(!SEL)">\uD83D\uDDD1 ${SEL?'ออกจากโหมดลบ':'เลือกลบ'}</div>`);
+ const A=Object.values(J),t=TODAY();
+ $('sToday').textContent=A.filter(j=>j.status=='open'&&cur(j).date==t).length;
+ $('sWait').textContent=A.filter(j=>j.status=='open'&&cur(j).st=='wait').length;
+ $('sDone').textContent=A.filter(j=>j.status=='closed'&&ymd(new Date(j.closedAt))==t).length;
+ document.querySelectorAll('.st[data-st]').forEach(e=>e.classList.toggle('on',e.dataset.st==TAB));
+ notifyParent(A,soonBanner(A));
+ document.body.classList.toggle('calw',TAB=='cal');
+ if(TAB=='cal'||TAB=='sum'){geoPaint(A.filter(j=>j.status=='open'));if(SEL)selMode(false);$('list').innerHTML=TAB=='cal'?calView(A):sumView(A);geoRefresh();return}
+ let L=A.filter(j=>({active:j.status=='open',today:j.status=='open'&&cur(j).date==t,wait:j.status=='open'&&cur(j).st=='wait',review:j.status=='review',hist:j.status=='closed'||j.status=='cancel',done:j.status=='closed'&&ymd(new Date(j.closedAt))==t})[TAB]);
+ if(Q){const q=Q.toLowerCase(),qd=Q.replace(/\D/g,'');L=L.filter(j=>[j.name,j.pick,j.drop,j.id,j.detail].join(' ').toLowerCase().includes(q)||(qd.length>=3&&String(j.tel).replace(/\D/g,'').includes(qd)))}
+ const key=j=>TAB=='hist'||TAB=='done'?ymd(new Date(j.closedAt||j.updatedAt)):TAB=='review'?ymd(new Date(j.doneAt||j.updatedAt)):cur(j).date;
+ const sk=j=>key(j)+(j.urgent?'0':'1')+(cur(j).to||cur(j).from||'')+j.id;
+ const hd=j=>j.status=='open'&&HOLD(cur(j));
+ L.sort((a,b)=>sk(a).localeCompare(sk(b)));
+ if(TAB=='hist'||TAB=='done'||TAB=='review')L.reverse();
+ L=L.filter(j=>!hd(j)).concat(L.filter(hd));   // งานที่พักไว้ (ยังไม่มีวันนัด) อยู่ล่างสุดเสมอ
+ let h='',d='';
+ L.forEach(j=>{const k=hd(j)?'HOLD':key(j);if(k!=d){d=k;h+=k=='HOLD'?'<div class="day">⏸ พักไว้ · รอลูกค้าคอนเฟิร์มวันใหม่</div>':`<div class="day">${fmtD(k)}${k==t?' · วันนี้':''}</div>`}h+=card(j)});
+ $('list').innerHTML=h||'<div class="empty">ไม่มีงาน</div>';
+ LASTL=L.map(j=>j.id);selBar();geoPaint(L);geoRefresh();
+}
+function card(j){
+ const r=cur(j),st=j.status!='open'?j.status:r.st,multi=j.rounds.length>1,LV=lvl(j),M=LV?mTo(j):0;
+ const c=LV=='hot'||LV=='late'?'--r':LV=='warn'?'--o':{wait:'--o',ok:'--b',go:'--p',closed:'--pr',review:'--am',cancel:'--mu'}[st];
+ const lb={ok:'คอนเฟิร์มแล้ว',go:'กำลังไป',review:'\uD83D\uDD0D รอตรวจสอบ',closed:'✅ เสร็จแล้ว'+(j.crew?' · '+j.crew+' คน':''),cancel:'ยกเลิก'}[st]||'';
+ const L=late(j),ow=j.status=='open'?owed(j):0,E=tExp(j),R=received(j);
+ const pays=j.rounds.filter(x=>x.pay),q=jsa(j.id);   // q = เลขงานในรูปที่ใส่ใน onclick ได้ปลอดภัย
+ return `<div data-gid="${esc(j.id)}" class="card ${j.urgent?'urg':''} ${st=='wait'?'wt':''} ${st=='cancel'?'cx':''} ${LV?'lv-'+LV:''}" style="--c:var(${c})">
+  ${SEL?`<label class="selck"><input type="checkbox" ${SEL[j.id]?'checked':''} onchange="selTog(${q},this)"> เลือกลบ</label>`:''}
+  <div class="row"><span>${j.urgent||LV=='hot'?'<span class="urgb">\uD83D\uDEA8 งานด่วน</span> ':''}${lb?`<span class="badge">${lb}</span>`:''}${multi?` <span class="chip rd">รอบ ${r.no}/${j.rounds.length}</span>`:''}</span>
+   ${j.status=='open'&&HOLD(r)?'':`<span class="time ${L?'late':''}">⏰ ${r.to?'ต้องถึง ':''}${esc(win(r))}${L?' · เลยเวลา':''}</span>`}</div>
+  ${j.status=='open'&&HOLD(r)?'<div class="nocf">⏸ พักงานไว้ — รอลูกค้าคอนเฟิร์มวันใหม่ แล้วกด "กำหนดวันใหม่"</div>':st=='wait'?'<div class="nocf">⚠ ยังไม่ได้รับการคอนเฟิร์มจากลูกค้า — โทรยืนยันก่อน</div>':''}
+  ${LV=='hot'?`<div class="hotbox">\uD83D\uDEA8 งานด่วน — ${M>0?'ต้องออกเดินทางภายใน '+hmTxt(M):'ถึงเวลานัดแล้ว รีบออกเดินทาง'}</div>`:LV=='warn'?`<div class="warnbox">⏰ อีก ${hmTxt(M)} ถึงเวลานัด</div>`:LV=='late'?`<div class="latebox">⛔ เลยเวลานัดแล้ว — จะยกเลิกงานนี้หรือไม่?<div class="acts"><button class="btn r" onclick="cancelJob(${q})">ยกเลิกงาน</button><button class="btn o" onclick="resched(${q})">\uD83D\uDCC5 เลื่อนนัด / พักงาน</button></div></div>`:''}
+  <div class="nm">${esc(j.name)} ${j.tel?`<a href="tel:${esc(String(j.tel).replace(/[^\d+]/g,''))}">\uD83D\uDCDE ${esc(j.tel)}</a>`:''}</div>
+  <div class="chips"><span class="chip ${j.type=='ขนย้าย'?'mv':''}">${esc(j.type)}</span>${j.note?`<span class="chip warn">⚠ ${esc(j.note)}</span>`:''}${r.movedFrom&&j.status=='open'?`<span class="moved">เลื่อนจาก ${fmtD(r.movedFrom)}</span>`:''}${ow?`<span class="owe">\uD83D\uDCB0 ยอดรอเก็บตอนจบงาน ${fmt(ow)} ฿</span>`:''}</div>
+  ${j.detail?`<div class="det" id="det${esc(j.id)}">${nl(j.detail)}</div><span class="more" onclick="tgl(${q},this)">อ่านทั้งหมด ▼</span>`:''}
+  <div class="loc">${j.pick||j.pickMap?`\uD83D\uDCCD ${esc(j.pick)} <a href="${esc(mapUrl(j.pick,j.pickMap))}" target="_blank">แผนที่</a>`:''}${j.drop||j.dropMap?`<br>\uD83C\uDF40 ${esc(j.drop)} <a href="${esc(mapUrl(j.drop,j.dropMap))}" target="_blank">แผนที่</a>`:''}</div>
+  <div class="pics">${(j.photos||[]).map(p=>`<img src="${img(p)}" loading="lazy" onclick="zoom(${jsa(p)},${q})" alt="">`).join('')}${j.status=='open'?`<label class="addpic">＋<br>รูป<input type="file" accept="image/\*" multiple hidden onchange="addPics(${q},this)"></label>`:''}</div>
+  ${multi?`<div class="rounds">${j.rounds.map(x=>`<div class="${x===r&&j.status=='open'?'now':''}"><span>รอบ ${x.no} · ${HOLD(x)?'พักไว้':fmtD(x.date)+' '+esc(win(x))}${trk(x)?' · '+trk(x):''}</span><span>${fmt(rPrice(x))} ฿ ${rStat(x,j)}</span></div>`).join('')}</div>`:''}
+  <div class="row" style="margin-top:6px"><span class="mu">${trk(r)?'\uD83D\uDE9B '+trk(r,'  '):''}</span><span class="total">${multi?'รวม ':''}${fmt(tPrice(j))} ฿</span></div>
+  ${j.status=='open'&&r.st=='go'&&r.goAt?`<div class="timer">\uD83D\uDE9B ออกเดินทาง ${hm(r.goAt)} · ผ่านไป <b data-go="${r.goAt}">${dur(Date.now()-r.goAt)}</b></div>`:''}
+  ${pays.length||(j.status=='closed'||j.status=='review')?`<div class="paid">${pays.map(x=>`${x.pay.m=='โอน'?'\uD83D\uDCF1 โอน':'\uD83D\uDCB5 เงินสด'} ${fmt(x.pay.a)} ฿${x.pay.slip?` <img src="${img(x.pay.slip,200)}" onclick="zoom(${jsa(x.pay.slip)},${q})" alt="สลิป">`:''}`).join(' · ')}${j.rounds.flatMap(x=>x.after||[]).map(p=>`<img src="${img(p,200)}" onclick="zoom(${jsa(p)},${q})" alt="">`).join('')}</div>`:''}
+  ${j.status=='closed'||j.status=='review'?`<div class="mu" style="font-size:13px;margin-top:4px">${E?`ค่าใช้จ่าย ${fmt(E)} ฿ (${j.rounds.flatMap(x=>x.exp||[]).map(e=>esc(e[0])+' '+fmt(e[1])).join(', ')})`:'ไม่มีค่าใช้จ่าย'} · กำไร <b style="color:#14532d">${fmt(R-E)} ฿</b></div>`:''}
+  ${(j.status=='closed'||j.status=='review')&&j.rounds[0].goAt?`<div class="timer done">⏱ ${timeSummary(j)}</div>`:''}
+  <div class="acts">${acts(j)}${j.status=='open'?`<button class="btn" onclick="editInfo(${q})">✏️ แก้ไข</button>`:''}<button class="btn" onclick="detail(${q})">ดู / ประวัติ</button></div></div>`;
+}
+function rStat(x,j){return x.st=='done'?(x.pay?'✅':j&&j.status=='closed'?'✅ <span class="mu">เก็บรวมรอบสุดท้าย</span>':'✅ <span class="owe">รอเก็บ</span>'):x.st=='go'?'\uD83D\uDE9B':x.st=='ok'?'⏳':'⚠'}
+function timeSummary(j){const R=j.rounds.filter(x=>x.goAt&&x.endAt);if(!R.length)return'';const tot=R.reduce((a,x)=>a+(x.endAt-x.goAt),0);
+ return R.length==1?`ออก ${hm(R[0].goAt)} → ปิดงาน ${hm(R[0].endAt)} · ใช้เวลา <b>${dur(tot)}</b>`:`${R.length} รอบ · ใช้เวลารวม <b>${dur(tot)}</b>`}
+function tgl(id,el){const d=$('det'+id);d.classList.toggle('open');el.textContent=d.classList.contains('open')?'ย่อ ▲':'อ่านทั้งหมด ▼'}
+function acts(j){
+ const q=jsa(j.id);
+ if(j.status=='review')return `<button class="btn g" onclick="verify(${q})">\uD83D\uDD0D ตรวจสอบ + ยืนยัน</button>`;
+ if(j.status!='open')return'';
+ const r=cur(j),b=(t,f,g)=>`<button class="btn ${g?'g':''}" onclick="${f}">${t}</button>`;
+ if(HOLD(r))return b('\uD83D\uDCC5 กำหนดวันใหม่',`resched(${q})`,1);
+ return({wait:b('✅ ลูกค้าคอนเฟิร์ม',`confirmAct(${q},'confirm','ลูกค้าคอนเฟิร์มแล้ว?')`,1)+b('\uD83D\uDCC5 เลื่อนนัด',`resched(${q})`),
+  ok:b('\uD83D\uDE9B ออกเดินทาง',`confirmAct(${q},'depart','ออกเดินทางตอนนี้?')`,1)+b('\uD83D\uDCC5 เลื่อนนัด',`resched(${q})`),
+  go:b('✔ เสร็จงาน + รับเงิน',`finish(${q})`,1)})[r.st]||'';
+}
+setInterval(()=>document.querySelectorAll('[data-go]').forEach(e=>e.textContent=dur(Date.now()-+e.dataset.go)),15000);
+
+/* ---------- ปฏิทิน + แจ้งเตือน ---------- */
+let CALW=0,CAL_ID='';
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+function calItems(A){const out=[];A.forEach(j=>{if(j.status=='cancel')return;j.rounds.forEach(r=>{const st=j.status=='closed'||j.status=='review'?'closed':(r.st=='done'?'closed':r.st);out.push({j,r,st})})});return out}
+function calView(A){
+ const now=new Date(),mon=addDays(now,-((now.getDay()+6)%7)+CALW*7),days=[...Array(7)].map((_,i)=>ymd(addDays(mon,i))),t=TODAY();
+ const items=calItems(A),col={wait:'--o',ok:'--b',go:'--p',closed:'--pr'};
+ const d0=days[0].split('-'),d6=days[6].split('-');
+ let h=`<div class="calbar"><button class="btn o sm" onclick="CALW--;render()">◀</button><b>${+d0[2]} ${TH_M[d0[1]-1]} – ${+d6[2]} ${TH_M[d6[1]-1]}</b><button class="btn o sm" onclick="CALW++;render()">▶</button>${CALW?'<button class="btn o sm" onclick="CALW=0;render()">สัปดาห์นี้</button>':''}<span style="flex:1"></span><button class="btn o sm" onclick="openGCal()">เปิด Google Calendar</button></div><div class="cal">`;
+ days.forEach(d=>{const L=items.filter(x=>x.r.date==d).sort((a,b)=>(a.r.from||'').localeCompare(b.r.from||''));
+  const dt=d.split('-');
+  h+=`<div class="cday ${d==t?'td':''} ${d<t?'past':''} ${L.length?'':'empty-day'}"><h4>${TH_D[new Date(+dt[0],dt[1]-1,+dt[2]).getDay()]} ${+dt[2]}${d==t?' · วันนี้':''}<span>${L.length?L.length+' งาน':''}</span></h4>`+
+   L.map(x=>`<div data-gid="${esc(x.j.id)}" class="cev ${x.j.urgent?'urgc':''}" style="--c:var(${col[x.st]||'--b'})" onclick="detail(${jsa(x.j.id)})"><b>${esc(win(x.r))} ${esc(x.j.name)}</b><span class="mu">${esc(x.j.type)}${x.j.rounds.length>1?' · รอบ '+x.r.no:''} · ${fmt(rPrice(x.r))} ฿</span>${x.st=='wait'?'<br><span style="color:var(--o);font-weight:600">⚠ ยังไม่คอนเฟิร์ม</span>':''}</div>`).join('')+'</div>'});
+ return h+'</div><p class="mu" style="font-size:12px">สี: ส้ม=ยังไม่คอนเฟิร์ม · น้ำเงิน=คอนเฟิร์มแล้ว · ม่วง=กำลังไป · เขียว=เสร็จ · กดที่งานเพื่อดูรายละเอียด</p>'}
+function openGCal(){window.open('https:'+'/'+'/calendar.google.com/calendar/r'+(CAL_ID?'?cid='+encodeURIComponent(CAL_ID):''),'_blank')}
+// แจ้งเตือน: ภายใน 1 ชม. (งานด่วน + เสียง) · เลยเวลา (ถามยกเลิก) · ⏰ ภายใน 4 ชม.
+function soonBanner(A){const L=A.map(j=>({j,l:lvl(j)})).filter(x=>x.l).map(x=>Object.assign(x,{m:mTo(x.j)})).sort((a,b)=>a.m-b.m);
+ const H=L.filter(x=>x.l=='hot'),T=L.filter(x=>x.l=='late'),W=L.filter(x=>x.l=='warn'),el=$('soon');
+ const res={hot:H.length,late:T.length,warn:W.length,names:H.map(x=>x.j.name).join(', ')};
+ if(!L.length){el.hidden=true;return res}
+ const row=x=>`<div onclick="detail(${jsa(x.j.id)})">• ${esc(win(cur(x.j)))} ${esc(x.j.name)} — ${x.l=='late'?'เลยเวลาแล้ว (ยกเลิก หรือ เลื่อนนัด?)':x.m>0?'อีก '+hmTxt(x.m):'ถึงเวลานัดแล้ว'}${cur(x.j).st=='wait'?' (ยังไม่คอนเฟิร์ม)':''}</div>`;
+ el.hidden=false;el.className='soon'+(H.length||T.length?' red':'');
+ el.innerHTML=(H.length?'<b class="hot">\uD83D\uDEA8 งานด่วน! ต้องออกเดินทางภายใน 1 ชม.</b>'+H.map(row).join(''):'')+(T.length?'<b>⛔ เลยเวลานัด — ยกเลิกหรือเลื่อนนัด</b>'+T.map(row).join(''):'')+(W.length?'<b style="color:#c2410c">⏰ งานวันนี้ ภายใน 4 ชม.</b>'+W.map(row).join(''):'');
+ alarm(H.map(x=>x.j.id));return res}
+const ALERTED={};let AC=null;
+function beep(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();[0,.35,.7].forEach(t=>{const o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=880;g.gain.value=.12;o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+t);o.stop(AC.currentTime+t+.2)})}catch(e){}try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(e){}}
+function alarm(ids){const n=ids.filter(i=>!ALERTED[i]);ids.forEach(i=>ALERTED[i]=1);if(n.length&&window===window.parent)beep()}   // ฝังใน POS → POS เป็นคนส่งเสียง
+// ส่งตัวเลขให้เว็บ POS ที่ฝังหน้านี้ไว้ (ใช้ทำป้ายแจ้งเตือน)
+function notifyParent(A,al){const t=TODAY(),msg={ngannok:1,soon:al.hot,warn:al.warn,late:al.late,names:al.names,today:A.filter(j=>j.status=='open'&&cur(j).date==t).length,wait:A.filter(j=>j.status=='open'&&cur(j).st=='wait').length,
+  count:A.filter(j=>j.status=='open'&&(cur(j).date==t||cur(j).st=='wait')).length};   // ตัวเลขบนเมนู POS ไม่นับงานวันนี้ที่ยังไม่คอนเฟิร์มซ้ำ
+ let w=window;for(let i=0;i<6&&w!==w.parent;i++){w=w.parent;try{w.postMessage(msg,'*')}catch(e){}}}
+
+/* ---------- หน้าต่าง ---------- */
+function modal(h){$('sh').dataset.form='';$('sh').innerHTML=h;$('m').classList.add('on');$('sh').scrollTop=0}
+// คลิกนอกกรอบ = ปิด · ถ้าหน้านั้นมีช่องให้กรอก ถามยืนยันก่อน
+let MDOWN=null;
+$('m').addEventListener('mousedown',e=>MDOWN=e.target);
+$('m').addEventListener('click',e=>{if(e.target!==$('m')||MDOWN!==$('m'))return;
+ if(!$('sh').querySelector('input:not([type=file]),textarea,select'))return close_();
+ const f=$('sh').dataset.form;
+ $('cfT').textContent=f=='new'?'ข้อมูลที่กรอกไว้จะเก็บไว้ให้ กด "+ รับงานใหม่" เพื่อกรอกต่อได้':f=='edit'?'ที่แก้ไขไว้จะไม่ถูกบันทึก':'ที่กรอกไว้ในหน้านี้จะไม่ถูกบันทึก';
+ $('cf').classList.add('on')});
+function cfNo(){$('cf').classList.remove('on')}
+function cfYes(){$('cf').classList.remove('on');close_()}
+function close_(){try{keepDraft()}catch(e){}$('m').classList.remove('on')}
+/* ตัวดูรูป: รวมรูปทั้งงาน (หน้างาน + หลังจบงาน + สลิป) กด ‹ › / รูปเล็ก / ปัด / ปุ่มลูกศร เลื่อนได้ ไม่ต้องปิดแล้วกดใหม่ */
+let ZL=[],ZI=0;
+function zoomPics_(j){const a=[...(j.photos||[])];(j.rounds||[]).forEach(x=>{(x.after||[]).forEach(p=>a.push(p));if(x.pay&&x.pay.slip)a.push(x.pay.slip)});return a.filter((p,i)=>p&&a.indexOf(p)===i)}
+function zoom(id,jid){const L=jid&&J[jid]?zoomPics_(J[jid]):[];ZL=L.indexOf(id)>=0?L:[id];ZI=ZL.indexOf(id);
+ $('zmt').innerHTML=ZL.length>1?ZL.map((p,i)=>`<img src="${img(p,120)}" data-i="${i}" alt="">`).join(''):'';
+ $('zm').classList.toggle('one',ZL.length<2);$('zm').classList.add('on');zoomShow()}
+function zoomShow(){$('zmi').src=img(ZL[ZI],1600);$('zmc').textContent=(ZI+1)+' / '+ZL.length;
+ $('zmt').querySelectorAll('img').forEach((t,i)=>{t.classList.toggle('on',i===ZI);if(i===ZI)t.scrollIntoView({block:'nearest',inline:'center'})});
+ [1,-1].forEach(d=>{if(ZL.length>1)new Image().src=img(ZL[(ZI+d+ZL.length)%ZL.length],1600)})}
+function zoomGo(d){if(ZL.length<2)return;ZI=(ZI+d+ZL.length)%ZL.length;zoomShow()}
+function zoomClose(){$('zm').classList.remove('on');$('zmi').removeAttribute('src')}
+$('zmt').onclick=e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!=null){ZI=+i;zoomShow()}};
+document.addEventListener('keydown',e=>{if(!$('zm').classList.contains('on'))return;if(e.key==='ArrowRight')zoomGo(1);else if(e.key==='ArrowLeft')zoomGo(-1);else if(e.key==='Escape')zoomClose();else return;e.preventDefault()});
+(()=>{let x0=null,y0=0;const z=$('zm');z.addEventListener('touchstart',e=>{if(e.touches.length===1){x0=e.touches[0].clientX;y0=e.touches[0].clientY}else x0=null},{passive:true});
+ z.addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy))zoomGo(dx<0?1:-1)},{passive:true})})();
+function confirmAct(id,action,title,p){const j=J[id];
+ modal(`<h3>${esc(title)}</h3><p>${esc(j.name)} · ${fmtD(cur(j).date)} ${esc(win(cur(j)))}</p><div class="acts"><button class="btn g" id="yes">ยืนยัน</button><button class="btn o" onclick="close_()">ไม่ใช่ กดผิด</button></div>`);
+ $('yes').onclick=()=>act(action,id,p||{},title.replace(/\?$/,''))}
+
+/* ---------- รูป ---------- */
+function compress(file,max=1600,q=.8){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('อ่านไฟล์ไม่ได้'));fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('ไฟล์นี้ไม่ใช่รูป'));im.onload=()=>{let w=im.width,h=im.height;const s=Math.min(1,max/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/jpeg',q))};im.src=fr.result};fr.readAsDataURL(file)})}
+async function upload(files,prefix,each){const ids=[];let i=0;for(const f of files){i++;each&&each(i,files.length,null);const b=await compress(f);const r=await run('uploadPhoto',b,prefix);if(!r.ok)throw new Error(r.error);ids.push(r.id);each&&each(i,files.length,b,r.id)}return ids}
+async function addPics(id,inp){const fs=[...inp.files];inp.value='';if(!fs.length)return;if(!ME){pickMe();return}
+ showBusy('กำลังอัปโหลดรูป...');try{const ids=await upload(fs,id,(i,n)=>$('busyT').textContent=`กำลังอัปโหลดรูป ${i}/${n}...`);hideBusy();await act('addPhotos',id,{ids},`เพิ่มรูป ${ids.length} รูป`)}
+ catch(e){hideBusy();alertBox(msg(e))}}
+// อัปโหลดในฟอร์ม: เก็บ id ไว้ใน F[key]
+let F={};
+// จับฟอร์มที่กำลังอัปโหลดไว้ (f) — ปิดแล้วเปิดฟอร์มใหม่ระหว่างอัปโหลด F จะเป็นตัวใหม่ ตัวนับของมันต้องไม่โดนลด
+function formPics(inp,key,prevId,single){const fs=[...inp.files];inp.value='';if(!fs.length)return;const f=F;f.up=(f.up||0)+1;const pv=$(prevId);
+ const tmp=document.createElement('div');tmp.className='mu';tmp.textContent='กำลังอัปโหลด...';pv.appendChild(tmp);
+ upload(single?fs.slice(0,1):fs,key,(i,n,b,id)=>{tmp.textContent=`กำลังอัปโหลด ${i}/${n}...`;if(b){if(single){f[key]=id;pv.querySelectorAll('img').forEach(x=>x.remove())}else f[key].push(id);const im=document.createElement('img');im.src=b;pv.insertBefore(im,tmp)}})
+  .then(()=>tmp.remove()).catch(e=>{tmp.textContent='⚠ '+msg(e)}).finally(()=>{f.up--;if(f===F&&$('sumbox'))calc()})}
+
+/* ---------- รถ/ราคา ---------- */
+function trucksEd(id,T){return `<div id="${id}">${(T&&T.length?T:[['6 ล้อ',1,'']]).map(truckRow).join('')}</div><button class="btn o sm" type="button" style="margin-top:6px" onclick="$('${id}').insertAdjacentHTML('beforeend',truckRow(['',1,'']))">+ เพิ่มรถ</button>`}
+function truckRow(t){return `<div class="tr"><input list="trkList" value="${esc(t[0])}" placeholder="ชนิดรถ"><input type="number" inputmode="numeric" min="1" value="${esc(t[1])}" placeholder="คัน"><input type="number" inputmode="numeric" value="${esc(t[2])}" placeholder="ราคา/คัน"><button class="btn r sm" type="button" onclick="this.parentNode.remove()">✕</button></div>`}
+function readTrucks(id){return [...$(id).querySelectorAll('.tr')].map(d=>{const i=d.querySelectorAll('input');return[i[0].value.trim(),Number(i[1].value),i[2].value===''?NaN:Number(i[2].value)]}).filter(t=>t[0]||!isNaN(t[2]))}
+function checkTrucks(T){if(!T.length)return'ใส่รถและราคาอย่างน้อย 1 แถว';for(const t of T){if(!t[0])return'ใส่ชนิดรถ';if(!(t[1]>=1))return'จำนวนคันต้องอย่างน้อย 1';if(!(t[2]>=0))return'ใส่ราคาต่อคัน'}return''}
+const tsum=T=>T.reduce((a,t)=>a+(t[1]||0)*(t[2]||0),0);
+
+/* ---------- รับงานใหม่ ---------- */
+function infoFields(j){j=j||{};return `
+ <div class="g2"><div><label>ชื่อลูกค้า *</label><input id="fName" value="${esc(j.name)}"></div><div><label>เบอร์โทร</label><input id="fTel" inputmode="tel" value="${esc(j.tel)}"></div></div>
+ <div class="g2"><div><label>ประเภทงาน</label><select id="fType" onchange="$('dropBox').hidden=this.value!='ขนย้าย'&&!$('fDrop').value">${TYPES.map(t=>`<option ${t==j.type?'selected':''}>${t}</option>`).join('')}</select></div>
+  <div><label>&nbsp;</label><label style="margin:0;padding:9px;border:1px solid var(--bd);border-radius:10px;color:var(--r);font-weight:600"><input type="checkbox" id="fUrg" ${j.urgent?'checked':''}> \uD83D\uDEA8 งานด่วน</label></div></div>
+ <label>รายละเอียดงาน (พิมพ์ยาวได้)</label><textarea id="fDetail" rows="4">${esc(j.detail)}</textarea>
+ <label>⚠ ข้อควรระวัง (ขึ้นเป็นป้ายเหลือง)</label><input id="fNote" value="${esc(j.note)}">
+ <label>\uD83D\uDCCD จุดรับของ / ที่อยู่</label><input id="fPick" value="${esc(j.pick)}"><input id="fPickMap" placeholder="ลิงก์ Google Maps (ถ้ามี)" value="${esc(j.pickMap)}" style="margin-top:6px">
+ <div id="dropBox" ${j.type=='ขนย้าย'||j.drop?'':'hidden'}><label>\uD83C\uDF40 จุดส่งของ (งานขนย้าย)</label><input id="fDrop" value="${esc(j.drop)}"><input id="fDropMap" placeholder="ลิงก์ Google Maps (ถ้ามี)" value="${esc(j.dropMap)}" style="margin-top:6px"></div>`}
+function readInfo(){return{name:$('fName').value.trim(),tel:$('fTel').value.trim(),type:$('fType').value,urgent:$('fUrg').checked,detail:$('fDetail').value.trim(),note:$('fNote').value.trim(),pick:$('fPick').value.trim(),pickMap:$('fPickMap').value.trim(),drop:$('fDrop').value.trim(),dropMap:$('fDropMap').value.trim()}}
+// ฟอร์มเดียวใช้ทั้ง "รับงานใหม่" และ "แก้ไขงาน" (แก้ได้ทุกช่องในครั้งเดียว)
+let NEWDRAFT=null;
+function jobForm(j,edit){
+ const r=j&&j.rounds?cur(j):{date:TODAY(),from:'',to:'',trucks:[],st:'wait'};
+ const canTime=!edit||(j.status=='open'&&['wait','ok'].includes(r.st)),canPrice=!edit||(j.status=='open'&&r.st!='done');
+ F={photos:(j&&j.photos||[]).slice(),up:0,edit:edit?j.id:null};
+ modal(`<h3>${edit?'✏️ แก้ไขงาน · '+esc(j.name):'+ รับงานใหม่'}</h3>
+ <details ${j&&j.raw?'open':''}><summary style="cursor:pointer;color:var(--b)">\uD83D\uDCCB ข้อความจากแชท ${edit?'(ดู / แก้)':'— วางแล้วให้ระบบกรอกให้'}</summary>
+  <textarea id="paste" rows="8" style="resize:vertical" placeholder="วางข้อความงานจากแชทที่นี่ (ระบบเก็บข้อความนี้ไว้ดูทีหลังได้)">${esc(j&&j.raw||'')}</textarea><button class="btn o sm" style="margin-top:6px" onclick="doParse()">แยกข้อมูลลงช่อง</button><div id="pmsg"></div></details>
+ <div class="g2"><div><label>วันนัด ${edit&&HOLD(r)?'':'*'}</label><input type="date" id="fDate" value="${esc(r.date)}" ${canTime?'':'disabled'}></div><div>${canTime?(edit&&HOLD(r)?'<label>&nbsp;</label><span class="mu" style="font-size:12px">⏸ พักไว้อยู่ · ไม่ใส่วัน = พักต่อ</span>':''):'<label>&nbsp;</label><span class="mu" style="font-size:12px">ออกเดินทางแล้ว แก้วัน/เวลาไม่ได้</span>'}</div></div>
+ <div class="g2"><div><label>ต้องถึงตั้งแต่ *</label>${tpick('fFrom',r.from,!canTime)}</div><div><label>ถึง (ไม่ใส่ = ตรงเวลา)</label>${tpick('fTo',r.to,!canTime)}</div></div>
+ ${infoFields(j||{type:'ขนทิ้ง'})}
+ <label>\uD83D\uDCB0 ราคางาน (บาท) *${edit&&j.rounds.length>1?' (รอบ '+r.no+')':''}</label>${canPrice?`<input type="number" inputmode="numeric" min="0" id="fPrice" placeholder="งานนี้ราคาเท่าไหร่" value="${edit?rPrice(r):''}">`:'<div class="mu">งานเสร็จแล้ว แก้ราคาไม่ได้</div>'}
+ <label>\uD83D\uDCF7 รูปหน้างาน</label><div class="pics" id="fPv">${F.photos.map(id=>`<span class="fp" style="position:relative;flex:none"><img src="${img(id)}" alt=""><button class="btn r sm" type="button" style="position:absolute;top:2px;right:2px;padding:0 6px" onclick="F.photos=F.photos.filter(x=>x!==${jsa(id)});this.parentNode.remove()">✕</button></span>`).join('')}</div><input type="file" accept="image/\*" multiple onchange="formPics(this,'photos','fPv')">
+ ${edit?'<label>เหตุผลที่แก้ (ถ้ามี)</label><input id="fReason" placeholder="เช่น ลูกค้าขอเปลี่ยน">':'<label style="margin-top:12px;color:var(--tx)"><input type="checkbox" id="fConf"> ลูกค้าคอนเฟิร์มแล้ว</label>'}
+ <div class="err" id="ferr"></div>
+ <div class="acts"><button class="btn g" onclick="saveJob()">${edit?'บันทึกการแก้ไข':'บันทึกงาน'}</button><button class="btn o" onclick="${edit?`detail(${jsa(j.id)})`:'close_()'}">${edit?'กลับ':'ปิด (เก็บที่กรอกไว้)'}</button>${edit?'':'<button class="btn r" onclick="clearForm()">ล้างฟอร์ม</button>'}</div>`);
+ $('sh').dataset.form=edit?'edit':'new';
+}
+function newJob(){
+ jobForm(null,false);
+ const d=NEWDRAFT;if(!d)return;
+ ['paste','fDate','fFrom','fTo','fName','fTel','fType','fDetail','fNote','fPick','fPickMap','fDrop','fDropMap','fPrice'].forEach(k=>{if($(k)&&d[k]!=null)$(k).value=d[k]});
+ tSet('fFrom',d.fFrom);tSet('fTo',d.fTo);
+ $('fUrg').checked=!!d.fUrg;$('fConf').checked=!!d.fConf;$('dropBox').hidden=!($('fType').value=='ขนย้าย'||$('fDrop').value);
+ F.photos=d.photos||[];$('fPv').innerHTML=F.photos.map(id=>`<img src="${img(id)}" alt="">`).join('');
+ if(d.paste)$('paste').closest('details').open=true;
+ $('pmsg').innerHTML='<div class="ok">↩ กู้ข้อมูลที่กรอกค้างไว้ให้แล้ว</div>';
+}
+// ล้างฟอร์ม: ต้องปิดโหมด new ก่อน close_() ไม่งั้น keepDraft() เซฟฟอร์มเดิมกลับมา
+function clearForm(){$('sh').dataset.form='';NEWDRAFT=null;close_();newJob()}
+function keepDraft(){
+ if($('sh').dataset.form!=='new'||!$('fName'))return;
+ const d={};['paste','fDate','fFrom','fTo','fName','fTel','fType','fDetail','fNote','fPick','fPickMap','fDrop','fDropMap','fPrice'].forEach(k=>d[k]=$(k)?$(k).value:'');
+ d.fUrg=$('fUrg').checked;d.fConf=$('fConf').checked;d.photos=F.photos;
+ const any=d.paste||d.fName||d.fTel||d.fDetail||d.fPick||d.fPrice||F.photos.length;NEWDRAFT=any?d:null;
+}
+function saveJob(){
+ const e=m=>{$('ferr').textContent='⚠ '+m};
+ if(F.up)return e('รอรูปอัปโหลดให้เสร็จก่อน');
+ const edit=F.edit;
+ const p=Object.assign(readInfo(),{raw:$('paste').value.trim(),date:$('fDate').value,from:$('fFrom').value,to:$('fTo').value,photos:F.photos});
+ if($('fPrice')){const v=$('fPrice').value.trim();if(v===''||!(+v>=0))return e('ใส่ราคางาน');p.price=+v}else p.trucks=cur(J[edit]).trucks;
+ const held=edit&&HOLD(cur(J[edit]))&&!p.date;
+ if(!p.name)return e('ใส่ชื่อลูกค้า');if(!held){if(!p.date)return e('ใส่วันนัด');if(!p.from)return e('ใส่เวลานัด');if(p.to&&p.to<=p.from)return e('เวลาสิ้นสุดต้องหลังเวลาเริ่ม')}
+ if(edit){p.reason=$('fReason').value;return act('editAll',edit,p,'แก้ไขงานแล้ว')}
+ p.confirmed=$('fConf').checked;
+ act('create',null,p,'บันทึกงาน '+p.name).then(r=>{if(r)NEWDRAFT=null});
+}
+function doParse(){const o=parseChat($('paste').value);const set=(id,v)=>{if(v!=null&&v!=='')$(id).value=v};
+ if(!$('fDate').disabled){set('fDate',o.date);if(o.from)tSet('fFrom',o.from);if(o.to)tSet('fTo',o.to)}   // งานที่ออกเดินทาง/เลื่อนนัดแล้ว วัน-เวลาถูกล็อก ห้ามเขียนทับ
+ set('fName',o.name);set('fTel',o.tel);set('fType',o.type);set('fDetail',o.detail);set('fPick',o.pick);set('fPickMap',o.pickMap);set('fDrop',o.drop);set('fDropMap',o.dropMap);
+ if(o.urgent)$('fUrg').checked=true;$('dropBox').hidden=!(o.type=='ขนย้าย'||o.drop);
+ if(o.trucks.length&&$('fPrice'))$('fPrice').value=tsum(o.trucks);
+ $('pmsg').innerHTML='<div class="ok">✓ แยกข้อมูลแล้ว ตรวจทุกช่องอีกครั้งก่อนบันทึก</div>'}
+function parseChat(t){
+ const o={trucks:[],detail:''};t=String(t||'');const lines=t.split(/\r?\n/).map(s=>s.trim());
+ if(/งานด่วน/.test(t))o.urgent=true;
+ const MK=['มค','กพ','มีค','เมย','พค','มิย','กค','สค','กย','ตค','พย','ธค'];
+ const md=t.match(/(\d{1,2})\s*(ม\.?\s?ค|ก\.?\s?พ|มี\.?\s?ค|เม\.?\s?ย|พ\.?\s?ค|มิ\.?\s?ย|ก\.?\s?ค|ส\.?\s?ค|ก\.?\s?ย|ต\.?\s?ค|พ\.?\s?ย|ธ\.?\s?ค)/);
+ if(md){const m=MK.indexOf(md[2].replace(/[.\s]/g,''))+1;const n=new Date();let y=n.getFullYear();if(m<n.getMonth()+1-6)y++;if(m>0)o.date=y+'-'+p2(m)+'-'+p2(+md[1])}
+ const tr=t.match(/(\d{1,2})[.:](\d{2})\s*(?:น\.?)?\s*[-–]\s*(\d{1,2})[.:](\d{2})/);
+ if(tr){o.from=p2(tr[1])+':'+tr[2];o.to=p2(tr[3])+':'+tr[4]}else{const t1=t.match(/เวลา\s*(\d{1,2})[.:](\d{2})/);if(t1)o.from=p2(t1[1])+':'+t1[2]}
+ const links=t.match(/https?:\/\/\S+/g)||[];
+ const moving=/จุดที่ต้องขนย้ายไป|ขนย้าย/.test(t);
+ const noRue=t.replace(/ไม่(?:มี|ต้อง)(?:การ)?\S*รื้อ(?:\S*)/g,'');
+ o.type=/ขนย้าย/.test(t)?'ขนย้าย':/รื้อ/.test(noRue)?'รื้อ + ขนทิ้ง':'ขนทิ้ง';
+ if(links[0])o.pickMap=links[0];if(moving&&links[1])o.dropMap=links[1];
+ const det=[];let mode='',addr=[];
+ const tk=s=>{s=s.replace(/\s/g,'');return /หก|6/.test(s)?'6 ล้อ':/สิบ|10/.test(s)?'10 ล้อ':/กระบะ/.test(s)?'กระบะ':'รถ'};
+ lines.forEach((s,i)=>{
+  if(!s||/^[-–—_=]{3,}$/.test(s)||/https?:\/\/\S/.test(s))return;
+  if(i===0&&(md||/งานด่วน/.test(s)))return;
+  let m;
+  if(m=s.match(/^ชื่อ(?:ลูกค้า)?\s*[:：]\s*(.*)$/)){o.name=m[1].trim();mode='';return}
+  if(m=s.match(/^เบอร์(?:โทร)?\s*[:：]\s*(.*)$/)){o.tel=m[1].trim();mode='';return}
+  if(m=s.match(/^รายละเอียด(?:งาน)?\s*[:：]\s*(.*)$/)){if(m[1])det.push(m[1]);mode='det';return}
+  if(m=s.match(/^(?:หมายเหตุ|ที่อยู่)\s*[:：]\s*(.*)$/)){if(m[1])addr.push(m[1]);mode='addr';return}
+  if(/^ราคา/.test(s)){mode='price';const x=s.match(/([\d,]{3,})\s*บาท/);if(x&&!/รถ/.test(s))o.trucks.push(['รถ',1,+x[1].replace(/,/g,'')]);else if(x){const y=s.match(/([\d,]{3,})\s*บาท\s*ต่อ\s*(?:รอบ)?\s*(?:ต่อ)?\s*(รถ\S*)\s*(\d+)?/);if(y)o.trucks.push([tk(y[2]),+(y[3]||1),+y[1].replace(/,/g,'')])}return}
+  if(m=s.match(/^(?:รถ)?\s*(หกล้อ|6\s*ล้อ|สิบล้อ|10\s*ล้อ|กระบะ)\s*(\d+)\s*คัน\s*([\d,]+)\s*บาท/)){o.trucks.push([tk(m[1]),+m[2],+m[3].replace(/,/g,'')]);return}
+  if(/^(?:\uD83D\uDCCD)?\s*จุดที่ของอยู่|^(?:\uD83C\uDF40)?\s*จุดที่ต้องขนย้ายไป/.test(s))return;
+  if(mode=='addr'&&!/^(?:\uD83D\uDCCC|\uD83D\uDEA8|⚠|❗|‼|\*)/u.test(s)){addr.push(s);return}
+  if(mode=='addr')mode='';
+  if(mode=='price')return;
+  det.push(s);
+ });
+ if(o.trucks.length>1&&o.trucks[0][0]=='รถ'&&o.trucks[0][1]==1)o.trucks.shift();
+ o.trucks=o.trucks.filter((x,i,a)=>!(x[0]=='รถ'&&a.length>1));
+ o.trucks.forEach(x=>{if(x[0]=='รถ')x[0]=/รถ\s*กระบะ/.test(t)?'กระบะ':/หกล้อ|6\s*ล้อ/.test(t)?'6 ล้อ':/สิบล้อ|10\s*ล้อ/.test(t)?'10 ล้อ':'รถ'});
+ if(addr[0])o.pick=addr[0];if(moving&&addr[1])o.drop=addr.slice(1).join(' ');else if(addr.length>1)o.pick=addr.join(' ');
+ o.detail=det.join('\n');return o}
+
+/* ---------- เลื่อนนัด / แก้ราคา / แก้ข้อมูล ---------- */
+function resched(id){const j=J[id],r=cur(j);
+ const H=HOLD(r);
+ modal(`<h3>\uD83D\uDCC5 ${H?'กำหนดวันใหม่':'เลื่อนนัด'} · ${esc(j.name)}${j.rounds.length>1?' (รอบ '+r.no+')':''}</h3>
+ ${H?'':`<label style="margin:6px 0 0;padding:10px;border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-weight:600"><input type="checkbox" id="nh" onchange="$('ndBox').hidden=this.checked"> ⏸ ลูกค้ายังไม่คอนเฟิร์มวันใหม่ — พักงานไว้ก่อน<br><span class="mu" style="font-weight:400;font-size:12px">วันนัดจะหายไป และงานย้ายไปอยู่ล่างสุด จนกว่าจะกำหนดวันใหม่</span></label>`}
+ <div id="ndBox"><label>วันนัดใหม่</label><input type="date" id="nd" value="${esc(r.date)}">
+ <div class="g2"><div><label>ต้องถึงตั้งแต่</label>${tpick('nf',r.from)}</div><div><label>ถึง (ไม่ใส่ = ตรงเวลา)</label>${tpick('nt',r.to)}</div></div></div>
+ <label>เหตุผล</label><input id="nr" value="${H?'ลูกค้าคอนเฟิร์มวันใหม่':'ลูกค้าขอเลื่อน'}"><div class="err" id="ferr"></div>
+ <div class="acts"><button class="btn g" id="sv">บันทึก</button><button class="btn o" onclick="close_()">ยกเลิก</button></div>`);
+ $('sv').onclick=()=>{if($('nh')&&$('nh').checked)return act('reschedule',id,{hold:true,reason:$('nr').value},'พักงานไว้แล้ว');
+  const p={date:$('nd').value,from:$('nf').value,to:$('nt').value,reason:$('nr').value};
+  if(!p.date||!p.from)return $('ferr').textContent='⚠ ใส่วันและเวลาให้ครบ';if(p.to&&p.to<=p.from)return $('ferr').textContent='⚠ เวลาสิ้นสุดต้องหลังเวลาเริ่ม';
+  act('reschedule',id,p,H?'กำหนดวันใหม่แล้ว':'เลื่อนนัดแล้ว')}}
+function reprice(id){const j=J[id],r=cur(j);
+ modal(`<h3>\uD83D\uDCB0 แก้ราคา · ${esc(j.name)}${j.rounds.length>1?' (รอบ '+r.no+')':''}</h3><p class="mu" style="margin:0">ราคาเดิม ${fmt(rPrice(r))} ฿</p>
+ <label>ราคางานใหม่ (บาท)</label><input type="number" inputmode="numeric" min="0" id="rP" value="${rPrice(r)}">
+ <label>เหตุผล</label><input id="pr" placeholder="เช่น รื้อตู้เสื้อผ้าเพิ่ม"><div class="err" id="ferr"></div>
+ <div class="acts"><button class="btn g" id="sv">บันทึก</button><button class="btn o" onclick="close_()">ยกเลิก</button></div>`);
+ $('sv').onclick=()=>{const v=$('rP').value.trim();if(v===''||!(+v>=0))return $('ferr').textContent='⚠ ใส่ราคางาน';act('reprice',id,{price:+v,reason:$('pr').value},'แก้ราคาเป็น '+fmt(+v)+' ฿')}}
+function editInfo(id){jobForm(J[id],true)}
+
+/* ---------- ดู / ประวัติ ---------- */
+function detail(id){if(!J[id])return;const j=J[id],r=cur(j),q=jsa(id);
+ const canRev=!(j.status=='open'&&r.st=='wait'&&j.rounds.length==1);
+ modal(`<h3>${esc(j.name)} · ${esc(j.type)} <span class="mu" style="font-size:12px">${esc(j.id)}</span></h3>
+ ${j.tel?`<div>\uD83D\uDCDE <a href="tel:${esc(String(j.tel).replace(/[^\d+]/g,''))}">${esc(j.tel)}</a></div>`:''}
+ <div class="loc">${j.pick||j.pickMap?`\uD83D\uDCCD ${esc(j.pick)} <a href="${esc(mapUrl(j.pick,j.pickMap))}" target="_blank">เปิดแผนที่</a>`:''}${j.drop||j.dropMap?`<br>\uD83C\uDF40 ${esc(j.drop)} <a href="${esc(mapUrl(j.drop,j.dropMap))}" target="_blank">เปิดแผนที่</a>`:''}</div>
+ ${j.detail?`<div class="det open">${nl(j.detail)}</div>`:''}
+ ${j.raw?`<details style="margin-top:8px"><summary style="cursor:pointer;color:var(--b)">\uD83D\uDCCB ข้อความต้นฉบับจากแชท</summary><div class="det open" style="white-space:pre-wrap">${esc(j.raw)}</div></details>`:''}
+ ${(j.photos||[]).length?`<div class="pics">${j.photos.map(p=>`<span style="position:relative;flex:none"><img src="${img(p)}" onclick="zoom(${jsa(p)},${q})" alt="">${j.status=='open'?`<button class="btn r sm" style="position:absolute;top:2px;right:2px;padding:0 6px" onclick="delPhoto(${q},${jsa(p)})">✕</button>`:''}</span>`).join('')}</div>`:''}
+ <b style="display:block;margin-top:10px">รอบงาน</b>
+ <div class="rounds">${j.rounds.map(x=>`<div><span>รอบ ${x.no} · ${HOLD(x)?'⏸ พักไว้':fmtD(x.date)+' '+esc(win(x))}${x.goAt?` · ออก ${hm(x.goAt)}`:''}${x.endAt?` → เสร็จ ${hm(x.endAt)}${x.goAt?' ('+dur(x.endAt-x.goAt)+')':''}`:''}${trk(x)||x.reason?`<br><span class="mu">${trk(x,', ')}${trk(x)&&x.reason?' · ':''}${esc(x.reason||'')}</span>`:''}${(x.exp||[]).length?`<br><span class="mu">ค่าใช้จ่าย: ${x.exp.map(e=>esc(e[0])+' '+fmt(e[1])+' ('+esc(e[2])+')').join(', ')}</span>`:''}</span><span>${fmt(rPrice(x))} ฿ ${x.pay?`<br>${esc(x.pay.m)} ${fmt(x.pay.a)}`:''} ${rStat(x,j)}</span></div>`).join('')}</div>
+ <div class="row" style="margin-top:6px"><span>รวม ${fmt(tPrice(j))} ฿ · รับแล้ว ${fmt(received(j))} ฿ · ค่าใช้จ่าย ${fmt(tExp(j))} ฿${j.crew?' · ไป '+j.crew+' คน':''}</span></div>
+ <div class="acts">
+  <button class="btn g" onclick="editInfo(${q})">✏️ แก้ไขงาน (ทุกช่อง)</button>
+  ${j.status=='open'&&['wait','ok'].includes(r.st)?`<button class="btn" onclick="resched(${q})">\uD83D\uDCC5 ${HOLD(r)?'กำหนดวันใหม่':'เลื่อนนัด / พักงาน'}</button>`:''}
+  ${canRev?`<button class="btn o" onclick="revert(${q})">↩ ย้อนสถานะ</button>`:''}
+  ${j.status=='open'?`<button class="btn r" onclick="cancelJob(${q})">ยกเลิกงาน</button>`:''}</div>
+ <div class="acts"><button class="btn" onclick="close_()">ปิด</button></div>`)}
+function revertText(j){const r=cur(j);if(j.status=='cancel')return'เปิดงานที่ยกเลิกกลับมา';if(j.status=='closed'&&j.doneAt)return'เสร็จแล้ว → รอตรวจสอบ';if(j.status=='review')return'รอตรวจสอบ → กำลังไป (ข้อมูลรับเงิน/ค่าใช้จ่ายจะถูกล้าง ต้องกดเสร็จงานใหม่)';if(j.status=='closed')return'เปิดงานที่ปิดแล้ว กลับเป็น "กำลังไป" (ข้อมูลรับเงิน/ค่าใช้จ่ายของรอบล่าสุดจะถูกล้าง ต้องกดปิดงานใหม่)';
+ if(r.fromCont&&['ok','wait'].includes(r.st))return`ลบรอบ ${r.no} แล้วเปิดรอบ ${r.no-1} กลับเป็น "กำลังไป"`;return({go:'กำลังไป → คอนเฟิร์มแล้ว',ok:'คอนเฟิร์มแล้ว → ยังไม่คอนเฟิร์ม'})[r.st]||''}
+function revert(id){const j=J[id];modal(`<h3>↩ ย้อนสถานะ?</h3><p>${esc(j.name)}<br><b>${esc(revertText(j))}</b></p><div class="acts"><button class="btn g" id="yes">ยืนยัน</button><button class="btn o" onclick="detail(${jsa(id)})">ไม่ใช่</button></div>`);$('yes').onclick=()=>act('revert',id,{},'ย้อนสถานะแล้ว')}
+function cancelJob(id){const j=J[id];modal(`<h3>ยกเลิกงานนี้?</h3><p>${esc(j.name)} · ${fmtD(cur(j).date)}<br><span class="mu">เปิดกลับได้ภายหลังด้วย "ย้อนสถานะ"</span></p><label>เหตุผล</label><input id="cr" placeholder="เช่น ลูกค้ายกเลิก"><div class="acts"><button class="btn r" id="yes">ยืนยันยกเลิกงาน</button><button class="btn o" onclick="detail(${jsa(id)})">ไม่ใช่</button></div>`);$('yes').onclick=()=>act('cancel',id,{reason:$('cr').value},'ยกเลิกงานแล้ว')}
+function delPhoto(id,p){modal(`<h3>ลบรูปนี้?</h3><img src="${img(p,600)}" style="max-width:100%;border-radius:10px" alt=""><div class="acts"><button class="btn r" id="yes">ลบรูป</button><button class="btn o" onclick="detail(${jsa(id)})">ไม่ใช่</button></div>`);$('yes').onclick=()=>act('delPhoto',id,{id:p},'ลบรูปแล้ว')}
+
+/* ---------- เสร็จงาน + รับเงิน ---------- */
+function finish(id){const j=J[id],r=cur(j),ob=owed(j);
+ F={id,slip:'',after:[],exp:[],end:true,payNow:true,big:0,up:0,ob};
+ modal(`<h3>✔ เสร็จงาน · ${esc(j.name)}${j.rounds.length>1?' (รอบ '+r.no+')':''}</h3>
+ ${r.goAt?`<div class="timer">⏱ ออกเดินทาง ${hm(r.goAt)} → ตอนนี้ ${hm(Date.now())} · ใช้เวลา <b>${dur(Date.now()-r.goAt)}</b></div>`:''}
+ <div class="box" style="background:#f5f3ff"><b>⏱ เวลาจริง</b> <span class="mu" style="font-size:12px">ลืมกดตอนหน้างาน แก้ตรงนี้ได้ · ไม่ใส่เวลาเสร็จ = ใช้เวลาตอนกดยืนยัน (เฉพาะงานวันนี้) · เสร็จหลังเที่ยงคืนใส่เวลาได้เลย ระบบรู้ว่าข้ามวัน</span>
+  <label>วันที่ไปทำงาน</label><input type="date" id="endDate" value="${r.date&&r.date<=TODAY()?r.date:TODAY()}" max="${TODAY()}">
+  <div class="g2"><div><label>ออกเดินทางจริง</label>${tpick('goTime',r.goAt?hm(r.goAt):'')}</div><div><label>เสร็จจริง</label>${tpick('endTime','')}</div></div></div>
+ <div id="payBox">
+  <label>ยอดรับจริง (บาท)</label><input type="number" inputmode="numeric" id="amt" value="${rPrice(r)+ob}" oninput="calc()">
+  <label>รับเงินทาง</label>
+  <div class="pay"><label><input type="radio" name="pm" value="เงินสด" onchange="$('slipbox').hidden=true;calc()"> \uD83D\uDCB5 เงินสด</label><label><input type="radio" name="pm" value="โอน" onchange="$('slipbox').hidden=false;calc()"> \uD83D\uDCF1 เงินโอน</label></div>
+  <div class="box" id="slipbox" hidden><b>\uD83D\uDCCE แนบสลิปโอน (บังคับ)</b><div class="pics" id="slipPv"></div><input type="file" accept="image/\*" onchange="formPics(this,'slip','slipPv',true)"></div></div>
+ <label>\uD83E\uDDFE ค่าใช้จ่ายรอบนี้ <span class="mu">(ถ้ามี กดเพิ่มได้ · ไม่มีก็ข้ามได้)</span></label>
+ <div class="box" id="expbox"><div class="cats">${CATS.map(c=>`<button class="btn o" type="button" onclick="addExp('${c}')">${c}</button>`).join('')}</div><div id="exrows"></div></div>
+ <div class="sumbox" id="sumbox"></div>
+ <div class="err" id="ferr"></div>
+ <div class="acts"><button class="btn g" onclick="doFinish()">ยืนยัน</button><button class="btn o" onclick="close_()">ยกเลิก</button></div>`);calc()}
+function payDefault(){const j=J[F.id];return rPrice(cur(j))+(F.end?F.ob:0)}
+function addExp(c){F.exp.push([c,0,SRC[0]]);drawExp()}
+function drawExp(){$('exrows').innerHTML=F.exp.map((e,i)=>`<div class="exrow"><b>${esc(e[0])}</b><input type="number" inputmode="numeric" placeholder="บาท" value="${e[1]||''}" oninput="F.exp[${i}][1]=+this.value;F.big=0;calc()"><select onchange="F.exp[${i}][2]=this.value;calc()">${SRC.map(s=>`<option ${s==e[2]?'selected':''}>${s}</option>`).join('')}</select><button class="btn r sm" type="button" onclick="F.exp.splice(${i},1);drawExp()">✕</button></div>`).join('');calc()}
+function calc(){const j=J[F.id];if(!j||!$('sumbox'))return;const r=cur(j),pay=F.payNow?(+$('amt').value||0):0,pm=(document.querySelector('[name=pm]:checked')||{}).value,E=F.exp,
+ t=E.reduce((a,e)=>a+(e[1]||0),0),fromJob=E.filter(e=>e[2]==SRC[0]).reduce((a,e)=>a+(e[1]||0),0),owe=E.filter(e=>e[2]==SRC[1]).reduce((a,e)=>a+(e[1]||0),0);
+ let h=`<div class="row"><span>ราคา${j.rounds.length>1?'รอบนี้':'งาน'}</span><b>${fmt(rPrice(r))}</b></div>`;
+ if(F.end&&F.ob)h+=`<div class="row oweb"><span>+ ยอดรอบก่อนที่รอเก็บ</span><b>${fmt(F.ob)}</b></div>`;
+ if(F.payNow===false)h+=`<div class="row oweb"><span>\uD83D\uDD52 รอบนี้เก็บรวมตอนจบงาน</span><b>${fmt(rPrice(r))}</b></div>`;
+ h+=`<div class="row"><span>รับจากลูกค้าตอนนี้</span><b>${fmt(pay)}</b></div><div class="row"><span>ค่าใช้จ่าย</span><b style="color:${t?'var(--r)':'var(--mu)'}">${t?'-'+fmt(t):'0'}</b></div><div class="row big"><span>เหลือ (รับ − จ่าย)</span><b>${fmt(pay-t)} ฿</b></div>`;
+ if(pm=='เงินสด'&&F.payNow)h+=`<div class="row cash"><span>\uD83D\uDCB5 เงินสดที่ต้องส่งคืนร้าน</span><b>${fmt(pay-fromJob)} ฿</b></div>`;
+ else if(fromJob)h+=`<div class="row oweb"><span>⚠ "หักจากเงินค่างาน" ใช้ได้เฉพาะรับเงินสด</span><b>${fmt(fromJob)}</b></div>`;
+ if(owe)h+=`<div class="row oweb"><span>\uD83D\uDC77 ร้านต้องคืนเงินลูกน้อง</span><b>${fmt(owe)} ฿</b></div>`;
+ $('sumbox').innerHTML=h}
+/* ต้องคิดแบบเดียวกับ finishTimes_ ในรหัส.gs — วันที่ไปทำงานเป็นหลัก เสร็จก่อนออก = ข้ามคืน */
+function finishPick(r){
+ const day=$('endDate').value||TODAY(),et=$('endTime').value,gt=$('goTime').value,now=Date.now();
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return{err:'วันที่ไปทำงานไม่ถูกต้อง'};
+ let goT=r.goAt||null;
+ if(gt){const t=bkkTs(day,gt);goT=(r.goAt&&Math.abs(t-r.goAt)<6e4)?r.goAt:t}
+ let endT;
+ if(et){endT=bkkTs(day,et);if(goT&&endT<goT)endT+=864e5}
+ else{if(day!==TODAY())return{err:'งานวันที่ '+fmtD(day)+' ไม่ใช่วันนี้ — ใส่เวลา "เสร็จจริง" ด้วย'};endT=now}
+ if(goT&&goT>now+3e5)return{err:'เวลาออกเดินทางจริงอยู่ในอนาคต — เช็กวันที่กับเวลาอีกครั้ง'};
+ if(endT>now+3e5)return{err:'เวลาเสร็จจริงอยู่ในอนาคต — เช็กวันที่กับเวลาอีกครั้ง'};
+ if(goT&&endT<goT)return{err:'เวลาเสร็จ ('+hm(endT)+') ต้องหลังเวลาออกเดินทาง ('+hm(goT)+')'};
+ return{endDate:day,endTime:et,goTime:gt}}
+function doFinish(){const e=m=>{$('ferr').textContent='⚠ '+m};const j=J[F.id],r=cur(j);
+ if(F.up)return e('รอรูปอัปโหลดให้เสร็จก่อน');
+ const EX=F.exp.filter(x=>x[1]>0);
+ const p={end:F.end,payNow:F.payNow===true,after:[],exp:EX};
+ const tp=finishPick(r);if(tp.err)return e(tp.err);Object.assign(p,tp);
+ if(p.payNow){const pm=document.querySelector('[name=pm]:checked');p.a=+$('amt').value;if(!(p.a>0))return e('ใส่ยอดเงินที่รับจริง');if(!pm)return e('เลือกก่อนว่าได้รับเป็นเงินสดหรือเงินโอน');p.m=pm.value;
+  if(p.m=='โอน'){if(!F.slip)return e('เงินโอนต้องแนบสลิปก่อนปิดงาน');p.slip=F.slip}}
+ if(p.m!='เงินสด'&&EX.some(x=>x[2]==SRC[0]))return e('"หักจากเงินค่างาน" ใช้ได้เฉพาะตอนรับเงินสด เปลี่ยนเป็น "ลูกน้องออกก่อน" หรือ "เงินร้าน"');
+ if(!F.big&&((EX.some(x=>x[1]>=1000))||(p.payNow&&p.a!==payDefault()))){F.big=1;return e((p.payNow&&p.a!==payDefault()?`ยอดรับ ${fmt(p.a)} ไม่ตรงกับยอดที่ต้องเก็บ ${fmt(payDefault())} · `:'')+(EX.some(x=>x[1]>=1000)?'มีค่าใช้จ่ายตั้งแต่ 1,000 บาท · ':'')+'ตรวจตัวเลขอีกครั้ง แล้วกด "ยืนยัน" อีกที')}
+ act('finish',F.id,p,`เสร็จงาน ${j.name} · ${p.m} ${fmt(p.a)} ฿ · รอตรวจสอบ`)}
+
+/* ---------- ตรวจสอบงาน (ใส่จำนวนคน → เสร็จแล้ว) ---------- */
+function verify(id){const j=J[id],R=received(j),E=tExp(j),pays=j.rounds.filter(x=>x.pay);F={id,crew:0};
+ modal(`<h3>\uD83D\uDD0D ตรวจสอบงาน · ${esc(j.name)}</h3>
+ <div class="sumbox"><div class="row"><span>ราคางาน</span><b>${fmt(tPrice(j))}</b></div>
+ ${pays.map(x=>`<div class="row"><span>รับ${x.pay.m=='โอน'?'เงินโอน':'เงินสด'}</span><b>${fmt(x.pay.a)}</b></div>${x.pay.slip?`<img src="${img(x.pay.slip,300)}" onclick="zoom(${jsa(x.pay.slip)},${jsa(id)})" style="max-height:120px;border-radius:8px;cursor:pointer" alt="สลิป">`:''}`).join('')}
+ ${j.rounds.flatMap(x=>x.exp||[]).map(e=>`<div class="row"><span>− ${esc(e[0])} <span class="mu">(${esc(e[2])})</span></span><b style="color:var(--r)">${fmt(e[1])}</b></div>`).join('')}
+ <div class="row big"><span>เหลือ (รับ − จ่าย)</span><b>${fmt(R-E)} ฿</b></div></div>
+ ${j.rounds[0].goAt?`<div class="timer done">⏱ ${timeSummary(j)}</div>`:''}
+ <label>ไปกี่คน</label><input type="number" id="crewN" inputmode="numeric" min="1" max="50" placeholder="พิมพ์จำนวนคนที่ไปงาน">
+ <div class="err" id="ferr"></div>
+ <div class="acts"><button class="btn g" id="yes">✔ ยืนยัน · เสร็จแล้ว</button><button class="btn o" onclick="close_()">ยกเลิก</button></div>`);
+ $('yes').onclick=()=>{const n=+$('crewN').value;if(!(n>=1&&n<=50&&n===Math.floor(n)))return $('ferr').textContent='⚠ พิมพ์จำนวนคนที่ไปงาน (1–50)';act('verify',id,{crew:n},`ตรวจสอบแล้ว · ${j.name} · ${n} คน`)}}
+function setCrew(n,el){F.crew=n;el.parentNode.querySelectorAll('button').forEach(b=>b.className='btn '+(b===el?'g':'o'))}
+
+/* ---------- เลือกลบงาน (ลบถาวร) ---------- */
+let SEL=null,LASTL=[];
+function selMode(on){SEL=on?{}:null;render()}
+function selTog(id,el){if(el.checked)SEL[id]=1;else delete SEL[id];selBar()}
+function selAll(){if(!SEL)return;LASTL.forEach(i=>SEL[i]=1);render()}
+function selBar(){$('selbar').hidden=!SEL;if(SEL){const n=Object.keys(SEL).length;$('selN').textContent=n?'เลือก '+n+' งาน':'ติ๊กงานที่จะลบ'}}
+function delSel(){const ids=Object.keys(SEL||{}).filter(i=>J[i]);if(!ids.length)return alertBox('ยังไม่ได้เลือกงาน');
+ modal(`<h3>\uD83D\uDDD1 ลบงานถาวร ${ids.length} งาน?</h3><div class="det open">${ids.map(i=>`• ${esc(J[i].name)} <span class="mu">${esc(i)} · ${HOLD(cur(J[i]))?'พักไว้':fmtD(cur(J[i]).date)} · ${fmt(tPrice(J[i]))} ฿</span>`).join('<br>')}</div>
+ <p style="color:var(--r);font-weight:600">ลบแล้วงานหายจากระบบและปฏิทิน (ย้อนกลับไม่ได้)</p>
+ <div class="acts"><button class="btn r" id="yes">ยืนยันลบ ${ids.length} งาน</button><button class="btn o" onclick="close_()">ไม่ใช่</button></div>`);
+ $('yes').onclick=async()=>{const r=await act('deleteJobs',null,{ids},'ลบ '+ids.length+' งานแล้ว');if(r){SEL=null;render()}}}
+
+/* ---------- สรุปยอด ---------- */
+let SF='',STO='';
+function setRange(k){const n=new Date(),t=TODAY();if(k=='d'){SF=STO=t}else if(k=='w'){SF=ymd(addDays(n,-6));STO=t}else if(k=='m'){SF=t.slice(0,8)+'01';STO=t}else{const a=new Date(n.getFullYear(),n.getMonth()-1,1),b=new Date(n.getFullYear(),n.getMonth(),0);SF=ymd(a);STO=ymd(b)}render()}
+function sumView(A){if(!SF){SF=TODAY().slice(0,8)+'01';STO=TODAY()}
+ const cd=j=>ymd(new Date(j.closedAt)),L=A.filter(j=>j.status=='closed'&&j.closedAt&&cd(j)>=SF&&cd(j)<=STO).sort((a,b)=>a.closedAt-b.closedAt);
+ const pend=A.filter(j=>j.status=='review').length,P=L.flatMap(j=>j.rounds.filter(x=>x.pay).map(x=>x.pay)),EX=L.flatMap(j=>j.rounds.flatMap(x=>x.exp||[]));
+ const inc=P.reduce((a,x)=>a+x.a,0),cash=P.filter(x=>x.m=='เงินสด').reduce((a,x)=>a+x.a,0),exs=EX.reduce((a,e)=>a+e[1],0),owe=EX.filter(e=>e[2]==SRC[1]).reduce((a,e)=>a+e[1],0),crew=L.reduce((a,j)=>a+(j.crew||0),0),cat={};
+ EX.forEach(e=>cat[e[0]]=(cat[e[0]]||0)+e[1]);const mx=Math.max(1,...Object.values(cat)),d=x=>+x.slice(8)+'/'+x.slice(5,7);
+ return `<div class="card noprint" style="--c:var(--pr)"><div class="g2"><div><label>ตั้งแต่วันที่</label><input type="date" value="${SF}" onchange="SF=this.value;render()"></div><div><label>ถึงวันที่</label><input type="date" value="${STO}" onchange="STO=this.value;render()"></div></div>
+ <div class="acts"><button class="btn o sm" onclick="setRange('d')">วันนี้</button><button class="btn o sm" onclick="setRange('w')">7 วัน</button><button class="btn o sm" onclick="setRange('m')">เดือนนี้</button><button class="btn o sm" onclick="setRange('pm')">เดือนที่แล้ว</button></div>
+ ${pend?`<p class="mu" style="margin:6px 0 0">\uD83D\uDD0D มีงานรอตรวจสอบ ${pend} งาน (ยังไม่นับในสรุป)</p>`:''}</div>
+ <h3 style="margin:6px 0">สรุปยอด ${d(SF)} – ${d(STO)}</h3>
+ <div class="stats" style="margin-bottom:10px;grid-template-columns:repeat(4,1fr)"><div class="st" style="--c:var(--b)"><b>${L.length}</b><span>งานที่เสร็จ</span></div><div class="st" style="--c:var(--pr)"><b>${fmt(inc)}</b><span>รายรับ</span></div><div class="st" style="--c:var(--r)"><b>${fmt(exs)}</b><span>ค่าใช้จ่าย</span></div><div class="st" style="--c:#14532d"><b style="color:#14532d">${fmt(inc-exs)}</b><span>กำไร</span></div></div>
+ <div class="card" style="--c:var(--b)"><b>รับเงินทาง</b><div class="row"><span>\uD83D\uDCB5 เงินสด</span><b>${fmt(cash)} ฿</b></div><div class="row"><span>\uD83D\uDCF1 เงินโอน</span><b>${fmt(inc-cash)} ฿</b></div>${owe?`<div class="row"><span>\uD83D\uDC77 ลูกน้องออกเงินก่อน (ร้านต้องคืน)</span><b>${fmt(owe)} ฿</b></div>`:''}<div class="row"><span>\uD83D\uDC77 คนไปงานรวม</span><b>${fmt(crew)} คน</b></div></div>
+ <div class="card" style="--c:var(--r)"><b>ค่าใช้จ่ายแยกประเภท</b>${Object.entries(cat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><div><i style="width:${v/mx*100}%"></i></div><b>${fmt(v)}</b></div>`).join('')||'<p class="mu">ไม่มี</p>'}</div>
+ <div class="card" style="--c:var(--mu)"><b>รายงาน</b><div style="overflow-x:auto"><table class="tb"><tr><th>วันที่</th><th>ลูกค้า</th><th>คน</th><th>รับ</th><th>จ่าย</th><th>กำไร</th></tr>${L.map(j=>{const R=received(j),E=tExp(j);return `<tr><td>${d(cd(j))}</td><td>${esc(j.name)}<br><small class="mu">${[...new Set(j.rounds.filter(x=>x.pay).map(x=>esc(x.pay.m)))].join('+')}</small></td><td>${j.crew||'-'}</td><td>${fmt(R)}</td><td>${fmt(E)}</td><td><b>${fmt(R-E)}</b></td></tr>`}).join('')}<tr class="tt"><td colspan="2">รวม</td><td>${fmt(crew)}</td><td>${fmt(inc)}</td><td>${fmt(exs)}</td><td>${fmt(inc-exs)}</td></tr></table></div>
+ <div class="acts noprint"><button class="btn o" onclick="window.print()">\uD83D\uDDA8 พิมพ์ / PDF</button></div></div>
+ <p class="mu" style="font-size:12px">นับเฉพาะงานที่ตรวจสอบแล้ว (เสร็จแล้ว) ตามวันที่กดตรวจสอบ · ย้อนหลังได้ประมาณ 4 เดือน</p>`}
+
+/* ---------- เริ่มทำงาน ---------- */
+setInterval(()=>{if(!BUSY&&autoOk())load(true)},60000);   // เปิดหน้าต่างค้างไว้ก็ยังเตือนงานด่วน/ส่งป้ายให้ POS (load เองไม่วาดรายการทับ) · ShopPOS: ถูกย่อ/ถูกบังก็ยังโหลด
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!BUSY)load(true)});
+load();
+</script></body></html>

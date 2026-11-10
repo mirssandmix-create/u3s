@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<!-- แอพรถขยะ 3ส. (เจ้าของ/พนักงาน) — ยอดค้างจ่ายรถขยะตามรอบวันที่ 11–10 · ติ๊กจ่ายรายบิล (รวมยอด → กดบันทึก)
+     ข้อมูลชุดเดียวกับเมนูรถขยะของหน้าเว็บแอพซื้อของ / หน้า 🚛 รถขยะ ในโปรแกรมร้าน (คำสั่ง gbDash / gbTripPaid)
+     หน้านี้คุยกับตัวแอพ (Kotlin GbStore/GbSync) ผ่าน api("gb/…") — ตัวแอพเก็บสรุปล่าสุดไว้ดูตอนไม่มีเน็ต + คิวติ๊กจ่ายที่ยังส่งไม่ได้ -->
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<script>/* สีพื้นที่เลือกใน ⚙️ (ตามมือถือ / ขาว / ดำ) — ใส่ก่อนวาดหน้า ไม่กะพริบ */try{var th=localStorage.getItem("gbTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}function thSync(){try{var bg=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();var dk=document.documentElement.getAttribute("data-theme")==="dark"||(document.documentElement.getAttribute("data-theme")!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);ShopAndroid.theme(dk,bg)}catch(e){}}
+addEventListener("DOMContentLoaded",thSync);try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",thSync)}catch(e){}
+</script>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--tx:#111827;--mu:#6b7280;--bd:#e5e7eb;--in:#fff;--ac:#0f766e;--ac2:#f0fdfa;--acT:#115e59;--c67:#1d4ed8;--c67bg:#eff6ff;--c67bd:#bfdbfe;--cpc:#c2410c;--cpcbg:#fff7ed;--cpcbd:#fed7aa;--er2:#dc2626;
+ --due:#b45309;--dueBg:#fffbeb;--dueBd:#fde68a;--ok:#15803d;--okBg:#f0fdf4;--okBd:#bbf7d0;--er:#b91c1c;--erBg:#fef2f2;--sh:0 1px 2px rgba(0,0,0,.04)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d0f12;--card:#16191d;--tx:#e5e7eb;--mu:#9ca3af;--bd:#2a2f36;--in:#0f1215;--ac:#14b8a6;--ac2:#0b2422;--acT:#5eead4;--c67:#60a5fa;--c67bg:#0f1b33;--c67bd:#1e3a8a;--cpc:#fb923c;--cpcbg:#2a160a;--cpcbd:#7c2d12;--er2:#f87171;
+ --due:#fbbf24;--dueBg:#241c08;--dueBd:#4a3a10;--ok:#4ade80;--okBg:#0b2214;--okBd:#14532d;--er:#fca5a5;--erBg:#2a1111;--sh:none}}
+:root[data-theme=dark]{--bg:#0d0f12;--card:#16191d;--tx:#e5e7eb;--mu:#9ca3af;--bd:#2a2f36;--in:#0f1215;--ac:#14b8a6;--ac2:#0b2422;--acT:#5eead4;--c67:#60a5fa;--c67bg:#0f1b33;--c67bd:#1e3a8a;--cpc:#fb923c;--cpcbg:#2a160a;--cpcbd:#7c2d12;--er2:#f87171;
+ --due:#fbbf24;--dueBg:#241c08;--dueBd:#4a3a10;--ok:#4ade80;--okBg:#0b2214;--okBd:#14532d;--er:#fca5a5;--erBg:#2a1111;--sh:none}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+html{overflow-anchor:none}
+body{background:var(--bg);color:var(--tx);font:600 15px/1.5 Prompt,"Noto Sans Thai",sans-serif;padding-bottom:110px}
+button,input,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 12px;border-bottom:1px solid var(--bd)}
+.sel2{padding:0 12px}
+.row{display:flex;align-items:center;gap:8px}
+.ttl{font-size:19px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ib.bk{font-size:30px;font-weight:700;padding-bottom:4px;color:var(--ac)}
+[hidden]{display:none!important}
+body.det .sel2,body.det #sum,body.det #boxes,body.det .tools,body.det #list{display:none}
+.tk .go2{color:var(--ac);font-weight:700}
+#det .tk{border-color:var(--bd)}
+#det .tkh{cursor:default}
+#st{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--card);border:1px solid var(--bd);color:var(--mu);max-width:55vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#st.ok{color:var(--ok);border-color:var(--okBd);background:var(--okBg)}
+#st.warn{color:var(--due);border-color:var(--dueBd);background:var(--dueBg)}
+.ib{width:40px;height:40px;border-radius:12px;border:1px solid var(--bd);background:var(--card);font-size:19px;line-height:1;display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0}
+.cyc{position:relative;flex:1;margin-top:8px}
+.cyc select{width:100%;height:44px;border-radius:14px;border:1px solid var(--bd);background:var(--card);font-weight:700;font-size:16px;padding:0 36px 0 14px;appearance:none;-webkit-appearance:none}
+.cyc:after{content:"▾";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--mu);pointer-events:none}
+.pills{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex:none;border:1px solid var(--bd);background:var(--card);border-radius:999px;padding:6px 16px;font-size:14px;font-weight:600;color:var(--mu)}
+.pill.on{background:var(--ac);border-color:var(--ac);color:#fff}
+main{padding:10px 12px}
+.sum{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px 16px;box-shadow:var(--sh)}
+.sum .k{font-size:13px;color:var(--mu)}
+.sum .big{font-size:34px;font-weight:700;line-height:1.15;color:var(--due);letter-spacing:-.5px}
+.sum .big.zero{color:var(--ok)}
+.sum .sub{font-size:13px;color:var(--mu);margin-top:2px}
+.boxes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:8px 10px;box-shadow:var(--sh);min-width:0}
+.box .k{font-size:12px;color:var(--mu)}
+.box .v{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tools{display:flex;gap:8px;margin:12px 0 8px;align-items:center}
+.srch{flex:1;min-width:0;height:42px;border-radius:999px;border:1px solid var(--bd);background:var(--in);padding:0 16px;outline:none;font-weight:600}
+.srch:focus{border-color:var(--ac)}
+.seg{display:flex;border:1px solid var(--bd);border-radius:999px;background:var(--card);padding:3px;flex:none}
+.seg button{border:0;background:transparent;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--mu);font-weight:600}
+.seg button.on{background:var(--ac2);color:var(--acT);font-weight:700}
+.empty{text-align:center;color:var(--mu);padding:28px 10px;font-weight:600}
+.err{background:var(--erBg);color:var(--er);border-radius:14px;padding:10px 14px;margin-bottom:10px;font-size:14px;white-space:pre-line}
+/* การ์ดรถ */
+.tk{background:var(--card);border:1px solid var(--bd);border-radius:18px;margin-bottom:10px;box-shadow:var(--sh);overflow:hidden}
+.tk.open{border-color:var(--ac)}
+.tkh{display:flex;gap:10px;padding:12px 14px;align-items:flex-start;cursor:pointer}
+.tkh .l{flex:1;min-width:0}
+.no{font-size:20px;font-weight:700;line-height:1.2}
+.no small{font-size:13px;color:var(--mu);font-weight:600;margin-left:6px}
+.who{font-size:13px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tkh .r{text-align:right;flex:none}
+.amt{font-size:20px;font-weight:700;color:var(--due);line-height:1.2}
+.amt.zero{color:var(--ok);font-size:16px}
+.chip{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 9px;margin-top:3px;border:1px solid}
+.chip.due{color:var(--due);background:var(--dueBg);border-color:var(--dueBd)}
+.chip.part{color:var(--acT);background:var(--ac2);border-color:var(--ac)}
+.chip.paid{color:var(--ok);background:var(--okBg);border-color:var(--okBd)}
+.chip.daily{color:var(--mu);background:transparent;border-color:var(--bd);margin-left:4px}
+.tkm{font-size:12.5px;color:var(--mu);padding:0 14px 12px;margin-top:-4px}
+.tkb{border-top:1px solid var(--bd);padding:10px 12px 12px}
+.acts{display:flex;gap:8px;margin-bottom:10px}
+.btn{border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:9px 12px;font-size:14px;font-weight:700;flex:1;text-align:center;text-decoration:none;color:var(--tx)}
+.btn.go{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn:disabled{opacity:.55}
+.h{font-size:13px;color:var(--mu);margin:8px 2px 6px;font-weight:700}
+.trip{border:1px solid var(--bd);border-radius:14px;padding:9px 10px;margin-bottom:6px;background:var(--bg)}
+.trip .t1{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.trip .t1 b{font-weight:700}
+.trip .t2{font-size:12px;color:var(--mu)}
+.trip.paid{opacity:.85}
+.parts{display:flex;gap:6px;margin-top:7px}
+/* ช่องติ๊ก: 67 = ฟ้า · 20% = ส้ม · จ่ายแล้ว = เขียว · ติ๊กไว้ยังไม่บันทึก = สีเต็ม */
+.tick{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:1.5px solid var(--bd);background:var(--card);border-radius:12px;padding:7px 9px;font-size:15px;font-weight:700;text-align:left;color:var(--tx)}
+.tick .bx{width:24px;height:24px;border-radius:7px;border:2px solid var(--bd);flex:none;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;background:var(--in)}
+.tick .lb{flex:1;min-width:0;line-height:1.2}
+.tick .tg{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:0 8px;margin-bottom:2px}
+.tick .lb small{display:block;font-size:11px;color:var(--mu);font-weight:600;line-height:1.25;margin-top:1px}
+.tick.p67{border-color:var(--c67bd)} .tick.p67 .tg{background:var(--c67bg);color:var(--c67)} .tick.p67 .bx{border-color:var(--c67)} .tick.p67 .am{color:var(--c67)}
+.tick.ppc{border-color:var(--cpcbd)} .tick.ppc .tg{background:var(--cpcbg);color:var(--cpc)} .tick.ppc .bx{border-color:var(--cpc)} .tick.ppc .am{color:var(--cpc)}
+.tick.paidp{background:var(--okBg);border-color:var(--okBd)} .tick.paidp .bx{background:var(--ok);border-color:var(--ok)} .tick.paidp .am{color:var(--ok)}
+.tick.p67.sel{background:var(--c67);border-color:var(--c67);color:#fff} .tick.ppc.sel{background:var(--cpc);border-color:var(--cpc);color:#fff}
+.tick.sel .bx{background:#fff;border-color:#fff} .tick.p67.sel .bx{color:var(--c67)} .tick.ppc.sel .bx{color:var(--cpc)}
+.tick.sel .am,.tick.sel .lb small{color:#fff} .tick.sel .tg{background:rgba(255,255,255,.25);color:#fff}
+.tick.unsel{background:var(--erBg);border:1.5px dashed var(--er2)} .tick.unsel .bx{background:var(--in);border-color:var(--er2)} .tick.unsel .lb small{color:var(--er2)}
+.tick.none{opacity:.55}
+.acts2{display:flex;gap:8px;margin:-2px 0 12px}
+.acts .btn,.acts2 .btn{min-height:48px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+.btn.b67{color:var(--c67);border-color:var(--c67bd);background:var(--c67bg)}
+.btn.bpc{color:var(--cpc);border-color:var(--cpcbd);background:var(--cpcbg)}
+.tsum{margin:0 14px 10px;border-radius:12px;padding:6px 10px;font-size:13px;background:var(--ac2);color:var(--acT);border:1px solid var(--ac)}
+.tsum b{font-size:15px}
+.c67{color:var(--c67)} .cpc{color:var(--cpc)}
+.more{width:100%;margin-top:4px}
+.payrow{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 2px;border-bottom:1px dashed var(--bd)}
+.payrow:last-child{border-bottom:0}
+.payrow span:first-child{color:var(--mu)}
+/* แถบบันทึกติ๊ก */
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--bd);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;box-shadow:0 -4px 16px rgba(0,0,0,.06);min-height:76px}
+#bar.off{display:none}
+#bar .t{min-height:40px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#bar .t{flex:1;font-size:13px;color:var(--mu);line-height:1.3}
+#bar .t b{display:block;color:var(--tx);font-size:17px}
+#bar .t .c67,#bar .t .cpc{font-weight:700}
+#bar .btn{flex:none}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111827;color:#fff;border-radius:999px;padding:8px 18px;font-size:14px;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:.95}
+</style></head><body>
+<div class="top">
+  <div class="row">
+    <button class="ib bk" id="bk" hidden aria-label="กลับไปหน้ารายชื่อรถ">‹</button>
+    <div class="ttl" id="ttl">🚛 รถขยะ 3ส.</div>
+    <span id="st">…</span>
+    <button class="ib" id="rf" title="โหลดใหม่" aria-label="โหลดใหม่">🔄</button>
+    <button class="ib" id="cfg" title="ตั้งค่า" aria-label="ตั้งค่า">⚙️</button>
+  </div>
+</div>
+<div class="sel2">
+  <div class="cyc"><select id="cy" aria-label="รอบรถขยะ (วันที่ 11–10)"></select></div>
+  <div class="pills" id="br"></div>
+</div>
+<main>
+  <div id="msg"></div>
+  <div class="sum" id="sum"></div>
+  <div class="boxes" id="boxes"></div>
+  <div class="tools">
+    <input class="srch" id="q" placeholder="🔍 เลขรถ / ทะเบียน / ชื่อ" autocomplete="off" enterkeyhint="search">
+    <div class="seg" id="flt"><button data-f="due" class="on">ค้างจ่าย</button><button data-f="all">ทั้งหมด</button></div>
+  </div>
+  <div id="list"><div class="empty">กำลังโหลด…</div></div>
+  <div id="det" hidden></div>
+</main>
+<div id="bar"><div class="t" id="barT"></div><button class="btn" id="barX">ล้าง</button><button class="btn go" id="barS">💾 บันทึกการจ่าย</button></div>
+<div id="toast"></div>
+<script>
+"use strict";
+var CB = {}, N = 0;
+window.__apiDone = function (id, txt) { var c = CB[id]; delete CB[id]; if (c) c(txt); };
+function api(path, body, done) {
+  var id = ++N;
+  CB[id] = function (t) { var j = null; try { j = JSON.parse(t); } catch (e) {} done && done(j || { ok: false, error: "ตัวแอพตอบผิดรูปแบบ" }); };
+  try { ShopAndroid.call(id, path, JSON.stringify(body || {})); } catch (e) { delete CB[id]; done && done({ ok: false, error: "ติดต่อตัวแอพไม่ได้" }); }
+}
+var $ = function (s) { return document.querySelector(s); };
+var has = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function r2(n) { return Math.round((Number(n) || 0) * 100 + 1e-9) / 100; }
+function money(n) { n = r2(n); return n.toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
+function baht(n) { return "฿" + money(n); }
+var TM = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."], TD = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+/* วันที่จากเว็บ = "2026-11-07T14:20:00+07:00" (เวลาไทย) — อ่านตัวเลขตรง ๆ ไม่ผ่านเขตเวลาของมือถือ */
+function dp(s) { var m = /^(\d{4})-(\d\d)-(\d\d)(?:T(\d\d):(\d\d))?/.exec(String(s || "")); return m ? { y: +m[1], m: +m[2], d: +m[3], hh: m[4] || "", mm: m[5] || "" } : null; }
+function dow(p) { return TD[new Date(Date.UTC(p.y, p.m - 1, p.d)).getUTCDay()]; }
+function thDay(s, time) { var p = dp(s); if (!p) return esc(s); return dow(p) + " " + p.d + " " + TM[p.m - 1] + (time && p.hh ? " " + p.hh + ":" + p.mm : ""); }
+function cycLabel(c) { var a = dp(c.start), b = dp(c.end); if (!a || !b) return c.id; return a.d + " " + TM[a.m - 1] + " – " + b.d + " " + TM[b.m - 1] + " " + String(b.y + 543).slice(2); }
+function hhmm(iso) { if (!iso) return ""; var d = new Date(iso); if (isNaN(d)) return ""; return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+function toast(t) { var e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(function () { e.classList.remove("on"); }, 2600); }
+
+var ST = null;              // คำตอบล่าสุดของตัวแอพ (gb/state)
+var V = { cycle: "", view: "all", f: "due", q: "" };
+var DET = null;            // truckId ที่เปิดหน้ารถอยู่ (null = หน้ารายชื่อรถ)
+var LISTY = 0;             // ตำแหน่งเลื่อนของหน้ารายชื่อ (กลับมาแล้วอยู่ที่เดิม)
+var SHOWPAY = {};           // truckId → กดแสดงประวัติการจ่าย
+var SHOWALL = {};           // truckId → แสดงเที่ยวทั้งหมด
+var TICK = {};              // tripId → true จ่าย / false ยกเลิกจ่าย (ติ๊กไว้ ยังไม่กดบันทึก)
+var BUSY = false;
+try { var sv = JSON.parse(localStorage.getItem("gbView") || "{}"); if (sv.view) V.view = sv.view; if (sv.f) V.f = sv.f; } catch (e) {}
+function keepView() { try { localStorage.setItem("gbView", JSON.stringify({ view: V.view, f: V.f })); } catch (e) {} }
+
+function dash() { return ST && ST.dash; }
+function trucks() { var d = dash(); return d && d.trucks || []; }
+function branches() { return ST && ST.branches || [{ id: "2", name: "สาขา 2" }, { id: "4", name: "สาขา 4" }]; }
+function brName(id) { if (id === "all") return "ทุกสาขา"; if (id === "out") return "ซื้อของนอกร้าน"; var b = branches().filter(function (x) { return x.id === id; })[0]; return b ? b.name : "สาขา " + id; }
+function tripById(id) { var r = null; trucks().forEach(function (g) { (g.trips || []).forEach(function (t) { if (t.tripId === id) r = t; }); }); return r; }
+
+/* ===== เงินของบิลหนึ่ง (เที่ยวรถ) =====
+   ค่ารถของบิล = หักตาราง (67) + หัก % (20%) — ติ๊กแยกกันได้ (ผู้ใช้ขอ 8 พ.ย.) · ส่งเว็บแบบ part "fixed" / "percent"
+   TICK["tripId|fixed"] = true จ่าย / false ยกเลิกจ่าย (ติ๊กไว้ ยังไม่กดบันทึก) */
+var PARTS = ["fixed", "percent"];
+function pAmt(t, p) { return r2(p === "fixed" ? t.fixedAmount : t.percentAmount); }
+function pName(t, p) { return p === "fixed" ? (Math.abs(pAmt(t, p) - 67) < 0.005 ? "67" : "ตาราง") : money(t.percentRate) + "%"; }
+function webP(t, p) { return pAmt(t, p) > 0 && !!(p === "fixed" ? t.fixedPaid : t.percentPaid); }
+function queuedP(t, p) {   // รอส่ง: true / false / undefined (รุ่นก่อนส่งแบบทั้งบิล "all")
+  var q = ST && ST.queue || {}, r;
+  if (has(q, t.tripId + "|all")) r = q[t.tripId + "|all"];
+  if (has(q, t.tripId + "|" + p)) r = q[t.tripId + "|" + p];
+  return r;
+}
+function baseP(t, p) { var q = queuedP(t, p); return q !== undefined ? q : webP(t, p); }
+function key(t, p) { return t.tripId + "|" + p; }
+function isP(t, p) { var k = key(t, p); return has(TICK, k) ? TICK[k] : baseP(t, p); }
+function amt(t) { return r2(pAmt(t, "fixed") + pAmt(t, "percent")); }
+/* ยอดค้างที่โชว์ = ตามเว็บ ปรับด้วยรายการรอส่ง (กดบันทึกแล้วแต่ยังไม่ถึงเว็บ) */
+function dueOf(g) {
+  var adj = 0;
+  (g.trips || []).forEach(function (t) {
+    PARTS.forEach(function (p) {
+      var q = queuedP(t, p); if (q === undefined || pAmt(t, p) <= 0) return;
+      if (q && !webP(t, p)) adj -= pAmt(t, p);
+      if (!q && webP(t, p)) adj += pAmt(t, p);
+    });
+  });
+  return r2(Math.max(0, (Number(g.dueAmount) || 0) + adj));
+}
+function tickOf(id) { var a = id.split("|"); return { t: tripById(a[0]), p: a[1] }; }
+
+function load(fresh) { api("gb/load", { cycle: V.cycle, view: V.view, fresh: !!fresh }, take); }
+function poll() { api("gb/state", { cycle: V.cycle, view: V.view }, take); }
+function take(j) {
+  if (!j) return;
+  if (j.login === false) { location.replace("setup.html"); return; }
+  if (!j.ok && !ST) { $("#msg").innerHTML = '<div class="err">⚠ ' + esc(j.error || "โหลดไม่สำเร็จ") + "</div>"; return; }
+  if (!j.ok) { toast(j.error || "โหลดไม่สำเร็จ"); return; }
+  ST = j;
+  if (j.cycle && !V.cycle) V.cycle = j.cycle;
+  // ติ๊กที่ตรงกับสถานะใหม่แล้ว (เช่น คนอื่นจ่ายไปก่อน) = เอาออก
+  Object.keys(TICK).forEach(function (k) { var x = tickOf(k); if (!x.t || TICK[k] === baseP(x.t, x.p)) delete TICK[k]; });
+  paint();
+  clearTimeout(take.t);
+  if (j.state === "loading" || (j.pending > 0 && j.state !== "offline")) take.t = setTimeout(poll, 1500);
+}
+window.appChanged = poll;
+window.appBack = function () { if (DET) { goList(); return true; } return false; };
+/* หน้าว่างพอจะโหลดหน้าแอพรุ่นใหม่ (WebUpdate · ตัวแอพเรียกตอนกลับเข้าแอพ) — ไม่มีหน้าต่างเปิด/ไม่ได้พิมพ์อยู่ · false = รอเปิดแอพครั้งหน้า */
+window.appIdle = function () { return !DET && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || ""); };
+/* หน้ารถ (แยกหน้า เฉพาะรถคันนั้น) / กลับหน้ารายชื่อ */
+function goDet(id) { if (!DET) LISTY = window.scrollY; DET = id; paint(false); window.scrollTo(0, 0); requestAnimationFrame(function () { window.scrollTo(0, 0); }); }
+function goList() { DET = null; paint(false); window.scrollTo(0, LISTY); requestAnimationFrame(function () { window.scrollTo(0, LISTY); }); }
+// กดแจ้งเตือน: เปิดรถคันนั้น (home = หน้าแรก)
+window.appOpen = function (t) {
+  if (!t || t === "home" || t === "pclink") { window.scrollTo(0, 0); poll(); return; }
+  if (V.cycle !== (ST && ST.current)) V.cycle = "";
+  if (V.view !== "all") { V.view = "all"; keepView(); }
+  goDet(t); load(false);
+};
+
+function paintStatus() {
+  var s = $("#st"), at = ST && ST.at ? hhmm(ST.at) : "", pend = ST && ST.pending || 0;
+  s.className = "";
+  if (!ST) { s.textContent = "…"; return; }
+  if (pend > 0) { s.className = "warn"; s.textContent = "⏳ รอส่ง " + pend + " บิล"; return; }
+  if (ST.state === "loading") { s.textContent = "⏳ กำลังโหลด…"; return; }
+  if (ST.state === "offline") { s.className = "warn"; s.textContent = "⚠ ไม่มีเน็ต" + (at ? " · ข้อมูล " + at : ""); return; }
+  if (ST.state === "failed") { s.className = "warn"; s.textContent = "⚠ โหลดไม่สำเร็จ" + (at ? " · ข้อมูล " + at : ""); return; }
+  s.className = "ok"; s.textContent = "✓ ล่าสุด " + at;
+}
+function paintTop() {
+  var d = dash(), cs = d && d.cycles || [];
+  var h = "";
+  cs.forEach(function (c) { h += '<option value="' + esc(c.id) + '"' + (c.id === V.cycle ? " selected" : "") + ">รอบ " + esc(cycLabel(c)) + (c.id === (ST && ST.current) ? " (รอบนี้)" : "") + "</option>"; });
+  if (!cs.length) h = '<option value="">รอบปัจจุบัน</option>';
+  $("#cy").innerHTML = h;
+  var b = '<button class="pill' + (V.view === "all" ? " on" : "") + '" data-v="all">ทุกสาขา</button>';
+  branches().forEach(function (x) { b += '<button class="pill' + (V.view === x.id ? " on" : "") + '" data-v="' + esc(x.id) + '">' + esc(x.name) + "</button>"; });
+  $("#br").innerHTML = b;
+}
+function paintSum() {
+  var d = dash(), T = d && d.totals;
+  if (!T) { $("#sum").innerHTML = '<div class="k">ร้านค้างจ่ายรถ</div><div class="big zero">—</div>'; $("#boxes").innerHTML = ""; return; }
+  var due = 0, n = 0;
+  trucks().forEach(function (g) { var x = dueOf(g); due += x; if (x > 0.004) n++; });
+  due = r2(due);
+  $("#sum").innerHTML = '<div class="k">ร้านค้างจ่ายรถ · ' + esc(brName(V.view)) + '</div><div class="big' + (due <= 0 ? " zero" : "") + '">' + baht(due) + '</div><div class="sub">' +
+    (due > 0 ? "ค้าง " + n + " คัน จาก " + trucks().length + " คัน" : "จ่ายครบทุกคันแล้ว ✓") + " · " + (T.tripCount || 0) + " เที่ยว</div>";
+  $("#boxes").innerHTML = '<div class="box"><div class="k">ยอดขายรวม</div><div class="v">' + baht(T.grossAmount) + '</div></div>' +
+    '<div class="box"><div class="k">หักค่ารถรวม</div><div class="v">' + baht(T.totalDeduction) + '</div></div>' +
+    '<div class="box"><div class="k">จ่ายรถแล้ว</div><div class="v">' + baht(T.paidAmount) + "</div></div>";
+}
+function tripHtml(t, locked) {
+  var parts = "", anyOn = true, any = false;
+  PARTS.forEach(function (p) {
+    var a = pAmt(t, p); if (a <= 0) return;
+    any = true;
+    var k = key(t, p), on = isP(t, p), chg = has(TICK, k), q = !chg && queuedP(t, p) !== undefined;
+    if (!on) anyOn = false;
+    var cls = "tick " + (p === "fixed" ? "p67" : "ppc"), lb, dis = "";
+    if (chg && on) { cls += " sel"; lb = "ติ๊กจ่าย · ยังไม่บันทึก"; }
+    else if (chg) { cls += " unsel"; lb = "ยกเลิกจ่าย · ยังไม่บันทึก"; }
+    else if (on) { cls += " paidp"; lb = "จ่ายแล้ว" + (q ? " · รอส่ง ⏳" : ""); }
+    else if (locked) { cls += " none"; lb = "ชำระยอดรอบแล้ว"; dis = " disabled"; }
+    else lb = "ค้างจ่าย" + (q ? " · รอส่ง ⏳" : "");
+    parts += '<button class="' + cls + '" data-k="' + esc(k) + '"' + dis + '><span class="bx">' + (on ? "✓" : "") + '</span><span class="lb"><span class="tg">' + esc(pName(t, p)) +
+      '</span><br><span class="am">' + baht(a) + "</span><small>" + lb + "</small></span></button>";
+  });
+  return '<div class="trip' + (any && anyOn ? " paid" : "") + '"><div class="t1"><b>' + thDay(t.date, true) + '</b><span>ขาย ' + baht(t.grossAmount) + '</span></div>' +
+    '<div class="t2">' + esc(brName(t.branch)) + (t.billId ? " · บิล " + esc(t.billId) : "") + (t.payoutMode === "daily" ? " · จ่ายรายวัน" : "") + (t.note ? " · " + esc(t.note) : "") + "</div>" +
+    (any ? '<div class="parts">' + parts + "</div>" : '<div class="t2">ไม่มีค่าหัก</div>') + "</div>";
+}
+/* ส่วนที่ยังค้าง ยังไม่ได้ติ๊ก — เก่าก่อน · ติ๊กได้ไม่เกินยอดค้างของรถ (เคยชำระยอดรอบแบบก้อน = เที่ยวยังขึ้นค้าง แต่ยอดค้างของรถลดแล้ว — เว็บไม่รับเกิน) */
+function fitParts(g, only) {
+  var left = r2(dueOf(g) - tickedPay(g)), out = [];
+  (g.trips || []).slice().reverse().forEach(function (t) {
+    PARTS.forEach(function (p) {
+      if (only && p !== only) return;
+      var a = pAmt(t, p);
+      if (a <= 0 || isP(t, p) || has(TICK, key(t, p))) return;
+      if (a <= left + 0.009) { out.push(key(t, p)); left = r2(left - a); }
+    });
+  });
+  return out;
+}
+function sumKeys(ks) { var s = 0; ks.forEach(function (k) { var x = tickOf(k); if (x.t) s += pAmt(x.t, x.p); }); return r2(s); }
+function tickedPay(g) { var s = 0; (g.trips || []).forEach(function (t) { PARTS.forEach(function (p) { if (TICK[key(t, p)] === true) s += pAmt(t, p); }); }); return r2(s); }
+/* ยอดที่ติ๊กไว้ (เฉพาะที่ติ๊ก) แยก 67 / % — ทั้งหมด หรือของรถคันเดียว */
+function tickSum(g) {
+  var r = { f: 0, nf: 0, pc: 0, npc: 0, un: 0, nun: 0, pay: 0, trucks: {} };
+  Object.keys(TICK).forEach(function (k) {
+    var x = tickOf(k); if (!x.t || (g && x.t.truckId !== g.truckId)) return;
+    var a = pAmt(x.t, x.p), tr = r.trucks[x.t.truckNo] = r.trucks[x.t.truckNo] || { f: 0, nf: 0, pc: 0, npc: 0, un: 0, nun: 0 };
+    if (!TICK[k]) { r.un += a; r.nun++; tr.un += a; tr.nun++; }
+    else if (x.p === "fixed") { r.f += a; r.nf++; tr.f += a; tr.nf++; }
+    else { r.pc += a; r.npc++; tr.pc += a; tr.npc++; }
+  });
+  r.f = r2(r.f); r.pc = r2(r.pc); r.un = r2(r.un); r.pay = r2(r.f + r.pc);
+  Object.keys(r.trucks).forEach(function (n) { var tr = r.trucks[n]; tr.f = r2(tr.f); tr.pc = r2(tr.pc); tr.un = r2(tr.un); });
+  return r;
+}
+function sumText(s, html) {
+  var a = [];
+  if (s.nf) a.push((html ? '<span class="c67">' : "") + "67 ×" + s.nf + " = " + money(s.f) + (html ? "</span>" : ""));
+  if (s.npc) a.push((html ? '<span class="cpc">' : "") + "20% ×" + s.npc + " = " + money(s.pc) + (html ? "</span>" : ""));
+  if (s.nun) a.push("ยกเลิก ×" + s.nun + " = " + money(s.un));
+  return a.join(" · ");
+}
+function cardHtml(g, open) {
+  var due = dueOf(g);
+  var chip = due <= 0.004 ? '<span class="chip paid">จ่ายครบ</span>' : (g.paidAmount > 0 || due < g.dueAmount - 0.004 ? '<span class="chip part">จ่ายบางส่วน</span>' : '<span class="chip due">ค้างจ่าย</span>');
+  var daily = (g.trips || []).some(function (t) { return t.payoutMode === "daily"; }) ? '<span class="chip daily">รายวัน</span>' : "";
+  var h = '<div class="tk' + (open ? " open" : "") + '" id="tk-' + esc(g.truckId) + '"><div class="tkh"' + (open ? "" : ' data-open="' + esc(g.truckId) + '"') + '><div class="l"><div class="no">รถ ' + esc(g.truckNo || "?") +
+    (g.plate ? "<small>" + esc(g.plate) + "</small>" : "") + '</div><div class="who">' + esc(g.owner || "ไม่ระบุชื่อ") + (g.phone ? " · " + esc(g.phone) : "") + "</div></div>" +
+    '<div class="r"><div class="amt' + (due <= 0.004 ? " zero" : "") + '">' + (due <= 0.004 ? "✓ ครบ" : baht(due)) + "</div>" + chip + daily + "</div></div>" +
+    '<div class="tkm">' + (g.tripCount || 0) + ' เที่ยว · <span class="c67">67 รวม ' + baht(g.fixedAmount) + '</span> · <span class="cpc">% รวม ' + baht(g.percentAmount) + "</span>" + (g.paidAmount ? " · จ่ายแล้ว " + baht(g.paidAmount) : "") + (open ? "" : ' · <span class="go2">ดูบิล ›</span>') + "</div>";
+  if (open) {
+    var all2 = fitParts(g), f2 = fitParts(g, "fixed"), p2 = fitParts(g, "percent");
+    h += '<div class="tkb">';
+    var dis = function (a) { return a.length ? "" : " disabled"; };
+    h += '<div class="acts">' + (g.phone ? '<a class="btn" href="tel:' + esc(String(g.phone).replace(/[^\d+]/g, "")) + '">📞 โทร</a>' : "") +
+      '<button class="btn go" data-allpay="' + esc(g.truckId) + '"' + dis(all2) + '>☑ ติ๊กที่ค้างทั้งหมด</button></div>';
+    h += '<div class="acts2"><button class="btn b67" data-allpay="' + esc(g.truckId) + '" data-only="fixed"' + dis(f2) + '>☑ 67 ทั้งหมด</button>' +
+      '<button class="btn bpc" data-allpay="' + esc(g.truckId) + '" data-only="percent"' + dis(p2) + '>☑ 20% ทั้งหมด</button></div>';
+    var ts = g.trips || [], all = SHOWALL[g.truckId] || ts.length <= 7;
+    h += '<div class="h">บิลที่มาขาย (' + ts.length + ' เที่ยว) — ติ๊ก <span class="c67">67</span> / <span class="cpc">20%</span> ที่จะจ่าย แล้วกดบันทึก</div>';
+    (all ? ts : ts.slice(0, 7)).forEach(function (t) { h += tripHtml(t, due <= 0.004); });
+    if (!ts.length) h += '<div class="t2" style="padding:4px 2px">ไม่มีเที่ยวในรอบ/สาขานี้</div>';
+    if (!all) h += '<button class="btn more" data-all="' + esc(g.truckId) + '">แสดงเพิ่มเติม (' + (ts.length - 7) + " เที่ยว)</button>";
+    var ps = g.payments || [];
+    if (ps.length) h += '<button class="btn more" data-pays="' + esc(g.truckId) + '">' + (SHOWPAY[g.truckId] ? "▲ ซ่อนประวัติการจ่าย" : "▼ แสดงประวัติการจ่าย (" + ps.length + " รายการ)") + "</button>";
+    if (ps.length && SHOWPAY[g.truckId]) {
+      h += '<div class="h">ประวัติการจ่าย</div>';
+      ps.slice(0, 30).forEach(function (p) {
+        var ty = { cycle: "ชำระยอดรอบ", daily: "จ่ายตอนซื้อ (รายวัน)", trip: "จ่ายรายบิล", trip_fixed: "จ่าย 67", trip_percent: "จ่าย %" }[p.paymentType] || p.paymentType;
+        h += '<div class="payrow"><span>' + thDay(p.date, true) + " · " + esc(ty) + (p.reference ? " · " + esc(p.reference) : "") + "</span><span>" + baht(p.amount) + "</span></div>";
+      });
+    }
+    h += "</div>";
+  }
+  return h + "</div>";
+}
+function ticked(g) { return (g.trips || []).some(function (t) { return has(TICK, key(t, "fixed")) || has(TICK, key(t, "percent")); }); }
+function paintList() {
+  var gs = trucks(), q = V.q.trim().toLowerCase(), h = "";
+  if (!dash()) { $("#list").innerHTML = '<div class="empty">' + (ST && ST.state === "loading" ? "⏳ กำลังดึงข้อมูลรถขยะจากเว็บ…" : "ยังไม่มีข้อมูล — ต่อเน็ตแล้วกด 🔄") + "</div>"; return; }
+  var shown = gs.filter(function (g) {
+    if (V.f === "due" && dueOf(g) <= 0.004 && !ticked(g)) return false;
+    if (!q) return true;
+    return [g.truckNo, g.plate, g.owner, g.phone].join(" ").toLowerCase().indexOf(q) >= 0;
+  });
+  shown.forEach(function (g) { h += cardHtml(g, false); });
+  if (!shown.length) h = '<div class="empty">' + (q ? "ไม่พบรถที่ค้นหา" : V.f === "due" && gs.length ? "✓ จ่ายรถครบทุกคันแล้ว<br><small>กด \"ทั้งหมด\" เพื่อดูรถทุกคัน</small>" : "ยังไม่มีรถขยะมาขายในรอบ/สาขานี้") + "</div>";
+  $("#list").innerHTML = h;
+}
+function paintDet() {
+  document.body.classList.toggle("det", !!DET);
+  $("#det").hidden = !DET;
+  $("#bk").hidden = !DET;
+  var g = DET ? trucks().filter(function (x) { return x.truckId === DET; })[0] : null;
+  $("#ttl").textContent = DET ? (g ? "รถ " + (g.truckNo || "?") : "รถขยะ") : "🚛 รถขยะ 3ส.";
+  if (!DET) { $("#det").innerHTML = ""; return; }
+  $("#det").innerHTML = g ? cardHtml(g, true) : '<div class="empty">' + (dash() ? "ไม่พบรถคันนี้ในรอบ/สาขาที่เลือก" : "⏳ กำลังโหลด…") + '<br><br><button class="btn" data-back="1">‹ กลับไปรายชื่อรถ</button></div>';
+}
+function paintBar() {
+  var n = Object.keys(TICK).length, s = tickSum();
+  $("#bar").classList.toggle("off", !dash());
+  var short = [s.nf ? '<span class="c67">67 ×' + s.nf + "</span>" : "", s.npc ? '<span class="cpc">20% ×' + s.npc + "</span>" : "", s.nun ? "ยกเลิก ×" + s.nun : ""].filter(Boolean).join(" · ");
+  $("#barT").innerHTML = n ? "<b>" + (s.pay ? "จ่าย " + baht(s.pay) : "ยกเลิก " + baht(s.un)) + "</b>" + short
+    : "<b>ยังไม่ได้ติ๊ก</b>แตะช่อง <span class=\"c67\">67</span> / <span class=\"cpc\">20%</span> ที่จะจ่าย";
+  $("#barS").disabled = BUSY || !n;
+  $("#barX").disabled = !n;
+}
+/* ตำแหน่งบนจอของ ช่องที่แตะ / บิลหรือรถแรกที่เห็น — วาดใหม่แล้วเลื่อนให้อยู่ที่เดิม (ไม่ดันขึ้นลง) */
+function anchorOf(sel) {
+  var topH = $(".top").getBoundingClientRect().bottom, el = sel ? document.querySelector(sel) : null;
+  if (!el) {
+    var c = document.querySelectorAll(DET ? "#det [data-k]" : "#list .tk");
+    for (var i = 0; i < c.length; i++) { var r = c[i].getBoundingClientRect(); if (r.bottom > topH + 8 && r.height) { el = c[i]; break; } }
+  }
+  if (!el) return null;
+  return { sel: sel || (el.dataset.k != null ? '[data-k="' + el.dataset.k + '"]' : "#" + el.id), top: el.getBoundingClientRect().top };
+}
+function paint(sel) {
+  var an = sel === false ? null : anchorOf(sel);
+  paintStatus(); paintTop(); paintSum(); paintList(); paintDet(); paintBar();
+  if (an) { var e2 = document.querySelector(an.sel); if (e2) { var d = e2.getBoundingClientRect().top - an.top; if (Math.abs(d) > 1) window.scrollBy(0, d); } }
+  var m = "";
+  if (ST && ST.needLogin) m += '<div class="err">🔑 ต้องเข้าสู่ระบบใหม่ — กด ⚙️ (ติ๊กที่ยังไม่ได้ส่งเก็บไว้ครบ)</div>';
+  else if (ST && ST.err && ST.state !== "loading") m += '<div class="err">⚠ ' + esc(ST.err) + "</div>";
+  if (ST && ST.failed) m += '<div class="err">⚠ ' + esc(ST.failed) + "</div>";
+  $("#msg").innerHTML = m;
+  document.querySelectorAll(".seg button").forEach(function (b) { b.classList.toggle("on", b.dataset.f === V.f); });
+}
+
+document.addEventListener("click", function (e) {
+  var el = e.target.closest("[data-pays],[data-open],[data-back],[data-k],[data-allpay],[data-all],.pill,.seg button");
+  if (!el) return;
+  if (el.dataset.open != null) { goDet(el.dataset.open); return; }
+  if (el.dataset.back != null) { goList(); return; }
+  if (el.dataset.pays != null) { SHOWPAY[el.dataset.pays] = !SHOWPAY[el.dataset.pays]; paint('[data-pays="' + el.dataset.pays + '"]'); return; }
+  if (el.dataset.k != null) {
+    var x = tickOf(el.dataset.k); if (!x.t) return;
+    if (has(TICK, el.dataset.k)) delete TICK[el.dataset.k]; else TICK[el.dataset.k] = !baseP(x.t, x.p);
+    paint('[data-k="' + el.dataset.k + '"]'); return;
+  }
+  if (el.dataset.allpay != null) {
+    trucks().forEach(function (g) { if (g.truckId === el.dataset.allpay) fitParts(g, el.dataset.only || "").forEach(function (k) { TICK[k] = true; }); });
+    SHOWALL[el.dataset.allpay] = true;
+    paint('[data-allpay="' + el.dataset.allpay + '"]' + (el.dataset.only ? '[data-only="' + el.dataset.only + '"]' : ":not([data-only])")); return;
+  }
+  if (el.dataset.all != null) { SHOWALL[el.dataset.all] = true; paint(); return; }
+  if (el.classList.contains("pill")) { if (V.view === el.dataset.v) return; V.view = el.dataset.v; keepView(); paint(); load(false); return; }
+  if (el.dataset.f) { V.f = el.dataset.f; keepView(); paint(); return; }
+});
+$("#cy").addEventListener("change", function () {
+  if (Object.keys(TICK).length && !confirm("เปลี่ยนรอบแล้วติ๊กที่ยังไม่บันทึกจะหาย — เปลี่ยนเลยไหม?")) { this.value = V.cycle; return; }
+  V.cycle = this.value; TICK = {}; load(false);
+});
+$("#q").addEventListener("input", function () { V.q = this.value; paintList(); });
+$("#rf").addEventListener("click", function () { load(true); toast("กำลังโหลดใหม่จากเว็บ…"); });
+$("#bk").addEventListener("click", goList);
+$("#cfg").addEventListener("click", function () {
+  if (Object.keys(TICK).length && !confirm("มีติ๊กที่ยังไม่บันทึก — ออกจากหน้านี้แล้วติ๊กจะหาย ไปต่อไหม?")) return;
+  location.href = "setup.html?change=1";
+});
+$("#barX").addEventListener("click", function () { TICK = {}; paint(); });
+$("#barS").addEventListener("click", function () {
+  var ks = Object.keys(TICK); if (!ks.length || BUSY) return;
+  var over = trucks().filter(function (g) { return tickedPay(g) > dueOf(g) + 0.009; });
+  if (over.length) { alert(over.map(function (g) { return "รถ " + g.truckNo + ": ติ๊ก " + money(tickedPay(g)) + " บาท เกินยอดค้าง " + money(dueOf(g)) + " บาท"; }).join("\n") + "\n\n(มีการชำระยอดรอบแบบก้อนไปแล้ว) — เอาติ๊กออกบางบิลก่อนบันทึก" + (V.view === "all" ? "\nหรือเลือกดูทีละสาขา" : "")); return; }
+  var s = tickSum(), lines = Object.keys(s.trucks).map(function (no) { return "รถ " + no + ": " + sumText(s.trucks[no], false); });
+  if (!confirm((s.pay ? "บันทึกจ่ายเงินรถ รวม " + money(s.pay) + " บาท" : "ยกเลิกการจ่าย รวม " + money(s.un) + " บาท") + "\n\n" + lines.join("\n") + "\n\nบันทึกเลยไหม?")) return;
+  var ch = ks.map(function (k) { var a = k.split("|"); return { tripId: a[0], part: a[1], paid: !!TICK[k] }; });
+  BUSY = true; paintBar();
+  api("gb/ticks", { changes: ch, cycle: V.cycle, view: V.view }, function (j) {
+    BUSY = false;
+    if (j && j.ok) { TICK = {}; toast(j.state === "offline" ? "บันทึกในมือถือแล้ว · จะส่งขึ้นเว็บเองเมื่อมีเน็ต" : "บันทึกแล้ว · กำลังส่งขึ้นเว็บ…"); take(j); }
+    else { paintBar(); alert("บันทึกไม่สำเร็จ: " + (j && j.error || "ไม่ทราบสาเหตุ")); }
+  });
+});
+try { ShopAndroid.ready(); } catch (e) {}
+api("gb/state", { cycle: V.cycle, view: V.view }, function (j) { take(j); if (j && j.login !== false) load(false); });
+</script>
+</body></html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!-- แอพรถขยะ: เข้าสู่ระบบ (ครั้งแรก / เข้าใหม่) + ตั้งค่าเด้งเตือน / ออกจากระบบ (?change=1 จากปุ่ม ⚙️) -->
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<script>/* สีพื้นที่เลือกใน ⚙️ (ตามมือถือ / ขาว / ดำ) — ใส่ก่อนวาดหน้า ไม่กะพริบ */try{var th=localStorage.getItem("gbTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}function thSync(){try{var bg=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();var dk=document.documentElement.getAttribute("data-theme")==="dark"||(document.documentElement.getAttribute("data-theme")!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);ShopAndroid.theme(dk,bg)}catch(e){}}
+addEventListener("DOMContentLoaded",thSync);try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",thSync)}catch(e){}
+</script>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--tx:#111827;--mu:#6b7280;--ac:#0f766e;--bd:#e5e7eb;--er:#b91c1c;--in:#fff;--ok:#15803d}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d0f12;--card:#16191d;--tx:#e5e7eb;--mu:#9ca3af;--ac:#14b8a6;--bd:#2a2f36;--er:#fca5a5;--in:#0f1215;--ok:#4ade80}}
+:root[data-theme=dark]{--bg:#0d0f12;--card:#16191d;--tx:#e5e7eb;--mu:#9ca3af;--ac:#14b8a6;--bd:#2a2f36;--er:#fca5a5;--in:#0f1215;--ok:#4ade80}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:600 15px/1.6 Prompt,"Noto Sans Thai",sans-serif;min-height:100vh;padding:20px 14px}
+.box{width:100%;max-width:440px;margin:0 auto 14px;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px 18px}
+h1{font-size:22px;font-weight:700;margin:0 0 4px}
+h2{font-size:17px;font-weight:700;margin:0 0 8px}
+.mu{color:var(--mu);font-size:14px;font-weight:400}
+label{display:block;font-size:14px;color:var(--mu);margin:12px 0 4px}
+input[type=text],input[type=password]{width:100%;height:48px;border-radius:14px;border:1px solid var(--bd);background:var(--in);color:var(--tx);font:600 17px Prompt,sans-serif;padding:0 14px;outline:none}
+input:focus{border-color:var(--ac)}
+button{width:100%;margin-top:14px;border:0;border-radius:14px;padding:13px;font:700 16px Prompt,sans-serif;background:var(--ac);color:#fff}
+button.gh{background:transparent;color:var(--tx);border:1px solid var(--bd);font-weight:600}
+button.rd{background:transparent;color:var(--er);border:1px solid var(--bd)}
+button:disabled{opacity:.6}
+.err{color:var(--er);font-size:14px;margin-top:10px;min-height:1em;white-space:pre-line}
+.note{font-size:13px;color:var(--mu);font-weight:400;margin-top:12px}
+.sw{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd)}
+.sw:last-child{border-bottom:0}
+.sw .t{flex:1}
+.sw .t small{display:block;color:var(--mu);font-weight:400;font-size:13px;line-height:1.35}
+.tg{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:999px;background:var(--bd);position:relative;flex:none;margin:0;transition:background .15s}
+.tg:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tg:checked{background:var(--ac)}
+.tg:checked:after{left:23px}
+.who{font-size:18px;font-weight:700}
+.thm{display:flex;gap:8px}
+.thm button{flex:1;width:auto;margin:0;border:1px solid var(--bd);background:var(--in);color:var(--tx);border-radius:999px;padding:11px 6px;font:700 15px Prompt,sans-serif}
+.thm button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+
+</style></head><body>
+<div class="box" id="loginBox">
+  <h1>🚛 รถขยะ 3ส.</h1>
+  <div class="mu" id="sub">ยอดค้างจ่ายรถขยะ + ติ๊กจ่ายรายบิล — เข้าสู่ระบบด้วย<b>ชื่อผู้ใช้/รหัสผ่านเดียวกับหน้าเว็บแอพซื้อของ</b> (ครั้งเดียว)</div>
+  <label for="u">ชื่อผู้ใช้</label>
+  <input type="text" id="u" autocapitalize="off" autocomplete="username" spellcheck="false">
+  <label for="p">รหัสผ่าน</label>
+  <input type="password" id="p" autocomplete="current-password">
+  <button id="b">เข้าสู่ระบบ</button>
+  <button id="x" class="gh" style="display:none">ยกเลิก กลับไปหน้าเดิม</button>
+  <div class="err" id="e"></div>
+  <div class="note">มือถือไม่เก็บรหัสผ่าน — เก็บแค่บัตรผ่านที่เว็บออกให้ · ส่งไฟล์แอพให้คนอื่นได้โดยไม่ติดรหัสไปด้วย</div>
+</div>
+<div id="cfgBox" style="display:none">
+  <div class="box">
+    <div class="mu">เข้าสู่ระบบอยู่</div>
+    <div class="who" id="who">—</div>
+    <button class="gh" id="back">← กลับหน้ารถขยะ</button>
+  </div>
+  <div class="box">
+    <h2>🎨 สีพื้น</h2>
+    <div class="thm" id="thm"><button data-th="">ตามมือถือ</button><button data-th="light">☀️ ขาว</button><button data-th="dark">🌙 ดำ</button></div>
+  </div>
+  <div class="box">
+    <h2>🔔 เด้งเตือน</h2>
+    <div class="sw"><div class="t">🚛 รถขยะมาขาย<small>มีเที่ยวใหม่ (ช้าสุดประมาณ 15 นาที)</small></div><input type="checkbox" class="tg" data-a="trip"></div>
+    <div class="sw"><div class="t">📅 ปิดรอบวันที่ 10<small>เช้าวันที่ 10 บอกยอดค้างจ่ายรถทั้งรอบ</small></div><input type="checkbox" class="tg" data-a="close"></div>
+    <div class="sw"><div class="t">💵 รถรายวันยังไม่จ่าย<small>หลัง 5 โมงเย็น ถ้ารถแบบจ่ายรายวันที่มาวันนี้ยังไม่ได้จ่าย</small></div><input type="checkbox" class="tg" data-a="daily"></div>
+    <div class="sw"><div class="t">✅ มีคนจ่ายเงินรถ<small>มีการจ่ายเงินรถจากเครื่องอื่น/หน้าเว็บ</small></div><input type="checkbox" class="tg" data-a="paid"></div>
+    <div class="note">ช่วง 3 ทุ่ม – 6 โมงเช้า แอพไม่ถามเว็บ (ประหยัดแบต)</div>
+  </div>
+  <div class="box">
+    <button class="rd" id="out">ออกจากระบบ</button>
+    <div class="err" id="e2"></div>
+    <div class="note" id="ver"></div>
+  </div>
+</div>
+<script>
+"use strict";
+var CB={},N=0;
+window.__apiDone=function(id,txt){var c=CB[id];delete CB[id];if(c)c(txt)};
+function api(path,body,done){var id=++N;CB[id]=function(t){var j=null;try{j=JSON.parse(t)}catch(e){}done(j)};
+ try{ShopAndroid.call(id,path,JSON.stringify(body||{}))}catch(e){delete CB[id];done(null)}}
+var $=function(s){return document.getElementById(s)};
+var change=/[?&]change=1/.test(location.search);
+window.appBack=function(){if(change){location.replace('app.html');return true}return false};
+window.appOpen=function(){};
+try{ShopAndroid.ready()}catch(e){}
+function info(){
+ api('gb/info',{},function(j){
+  if(!j||!j.ok)return;
+  $('ver').textContent='รุ่นแอพ '+(j.version||'')+(j.pending?' · ติ๊กรอส่ง '+j.pending+' รายการ':'');
+  if(j.login&&change&&!j.needLogin){
+   $('loginBox').style.display='none';$('cfgBox').style.display='block';
+   $('who').textContent=(j.user&&j.user.name||'')+(j.user&&j.user.username&&j.user.username!==j.user.name?' ('+j.user.username+')':'');
+   document.querySelectorAll('.tg').forEach(function(t){t.checked=!!(j.alerts&&j.alerts[t.dataset.a])});
+  }else if(j.login){
+   $('sub').innerHTML='เข้าสู่ระบบใหม่ — <b>เว็บไม่รับบัตรผ่านเดิมแล้ว</b> (ติ๊กที่ยังไม่ได้ส่งเก็บไว้ครบ จะส่งต่อหลังเข้าสู่ระบบ)';
+   $('x').style.display='block';
+  }
+ });
+}
+info();
+function go(){
+ var u=$('u').value.trim(),p=$('p').value,b=$('b'),e=$('e');
+ if(!u||!p){e.textContent='⚠ กรอกชื่อผู้ใช้และรหัสผ่าน';return}
+ b.disabled=true;b.textContent='กำลังตรวจกับเว็บ…';e.textContent='';
+ api('gb/login',{username:u,password:p},function(j){
+  b.disabled=false;b.textContent='เข้าสู่ระบบ';
+  if(j&&j.ok){$('p').value='';location.replace('app.html');return}
+  e.textContent='⚠ '+((j&&j.error)||'ติดต่อตัวแอพไม่ได้');
+ });
+}
+function thPaint(){var t="";try{t=localStorage.getItem("gbTheme")||""}catch(e){}document.querySelectorAll('#thm button').forEach(function(b){b.classList.toggle('on',b.dataset.th===t)})}
+document.querySelectorAll('#thm button').forEach(function(b){b.onclick=function(){var t=b.dataset.th;try{if(t)localStorage.setItem("gbTheme",t);else localStorage.removeItem("gbTheme")}catch(e){}
+ if(t)document.documentElement.setAttribute("data-theme",t);else document.documentElement.removeAttribute("data-theme");thPaint();thSync()}});
+thPaint();
+$('b').onclick=go;
+$('p').addEventListener('keydown',function(ev){if(ev.key==='Enter')go()});
+$('x').onclick=function(){location.replace('app.html')};
+$('back').onclick=function(){location.replace('app.html')};
+document.querySelectorAll('.tg').forEach(function(t){t.addEventListener('change',function(){var a={};a[t.dataset.a]=t.checked;api('gb/alerts',{alerts:a},function(){})})});
+$('out').onclick=function(){
+ api('gb/logout',{},function(j){
+  if(j&&j.ok){location.replace('setup.html');return}
+  if(j&&j.pending){
+   if(!confirm('ยังมีติ๊กจ่ายที่ยังไม่ได้ส่งขึ้นเว็บ '+j.pending+' รายการ\nออกจากระบบตอนนี้ = รายการพวกนี้หาย (ยังไม่ได้จ่ายในระบบ)\n\nออกเลยไหม?'))return;
+   api('gb/logout',{force:true},function(k){if(k&&k.ok)location.replace('setup.html');else $('e2').textContent='⚠ '+((k&&k.error)||'ออกไม่สำเร็จ')});
+   return;
+  }
+  $('e2').textContent='⚠ '+((j&&j.error)||'ออกไม่สำเร็จ');
+ });
+};
+</script>
+</body></html>

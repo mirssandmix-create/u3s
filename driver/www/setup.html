@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- แอพคนส่ง: ครั้งแรก — วางลิงก์คนส่งที่ร้านส่งให้ทาง LINE (ทั้งข้อความก็ได้ แอพหาลิงก์ในนั้นเอง) -->
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--tx:#e2e8f0;--mu:#94a3b8;--ac:#57a97c;--bd:#334155;--er:#fca5a5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:500 15px/1.6 "Noto Sans Thai",sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{width:100%;max-width:440px;background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:24px 20px}
+h1{font-size:21px;margin:0 0 4px}
+.mu{color:var(--mu);font-size:14px}
+ol{padding-left:22px;margin:14px 0;color:var(--mu);font-size:14px}
+ol b{color:var(--tx)}
+textarea{width:100%;min-height:110px;border-radius:12px;border:1px solid var(--bd);background:#0b1222;color:var(--tx);font:inherit;padding:12px;resize:vertical}
+button{width:100%;margin-top:14px;border:0;border-radius:12px;padding:14px;font:700 16px "Noto Sans Thai",sans-serif;background:var(--ac);color:#fff}
+button:disabled{opacity:.6}
+.err{color:var(--er);font-size:14px;margin-top:10px;min-height:1em;white-space:pre-line}
+</style></head><body>
+<div class="box">
+  <h1>🚚 ส่งของ 3ส.</h1>
+  <div class="mu">ใส่ลิงก์ของคุณครั้งเดียว ครั้งต่อไปเปิดแอพแล้วใช้ได้เลย</div>
+  <ol>
+    <li>เปิด <b>LINE</b> ที่ร้านส่งลิงก์คนส่งให้</li>
+    <li><b>กดค้าง</b>ที่ลิงก์ → <b>คัดลอก</b></li>
+    <li>กลับมา<b>กดค้าง</b>ในช่องด้านล่าง → <b>วาง</b></li>
+  </ol>
+  <textarea id="t" placeholder="วางลิงก์ที่นี่"></textarea>
+  <button id="b" onclick="go()">เริ่มใช้งาน</button>
+  <div class="err" id="e"></div>
+</div>
+<script>
+"use strict";
+var CB={},N=0;
+window.__apiDone=function(id,txt){var c=CB[id];delete CB[id];if(c)c(txt)};
+function api(path,body,done){var id=++N;CB[id]=function(t){var j=null;try{j=JSON.parse(t)}catch(e){}done(j)};
+ try{ShopAndroid.call(id,path,JSON.stringify(body||{}))}catch(e){delete CB[id];done(null)}}
+var bad=new URLSearchParams(location.search).get('bad');
+try{ShopAndroid.ready()}catch(e){}
+if(bad)document.getElementById('e').textContent='⚠ '+bad+'\nขอลิงก์ใหม่จากที่ร้าน แล้ววางอีกครั้ง';
+function go(){
+ var t=document.getElementById('t').value.trim(),b=document.getElementById('b'),e=document.getElementById('e');
+ if(!t){e.textContent='⚠ ยังไม่ได้วางลิงก์';return}
+ b.disabled=true;b.textContent='กำลังตรวจลิงก์…';e.textContent='';
+ api('drv/link',{text:t},function(j){
+  b.disabled=false;b.textContent='เริ่มใช้งาน';
+  if(j&&j.ok){location.replace('driver.html');return}
+  e.textContent='⚠ '+((j&&j.error)||'ติดต่อตัวแอพไม่ได้');
+ });
+}
+</script>
+</body></html>
