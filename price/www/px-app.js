@@ -814,8 +814,56 @@
   /* กลับเข้าแอพ: เกิน 1 นาที = ถามเลขรุ่น (ไม่ดึงถ้าไม่มีอะไรใหม่) */
   const back = () => { if (cfg.token && !$("main").classList.contains("hidden") && Date.now() - lastCheck > 60000) refresh(false); };
   document.addEventListener("visibilitychange", () => { if (!document.hidden) back(); });
-  window.appChanged = back;
+  window.appChanged = () => { back(); updCheck(false); };
   window.addEventListener("online", back);
+
+  /* ---------- บังคับอัปเดต (Android) — 13 พ.ย. ผู้ใช้ขอแบบแอพเวลาทำงาน: มีหน้าแอพรุ่นใหม่บนเว็บ = ล็อกจอจนอัปเดตเสร็จ ----------
+     เช็คชุดหน้าแอพ (u3s/price/manifest.json) ตอนเปิดแอพ · กลับเข้าแอพ · ทุก 10 นาที · ใหม่กว่าที่ใช้อยู่ = รอหน้าต่าง/การบันทึกเสร็จก่อน
+     แล้วล็อกจอ → สั่งตัวแอพ webCheck (โหลด+ตรวจลายเซ็น+สลับหน้า) · ราคาที่แก้ค้างจำไว้ในเครื่อง ไม่หาย
+     3 นาทีอัปเดตไม่ได้ (ไม่มีเน็ต/ชุดเสีย) = ปุ่ม "ใช้รุ่นเดิมไปก่อน" · iPhone ไม่ต้อง (เว็บแอพโหลดไฟล์ล่าสุดทุกครั้งที่มีเน็ตอยู่แล้ว) */
+  const UPD = { url: "https://mirssandmix-create.github.io/u3s/price/manifest.json", need: "", lock: false, skip: false, t0: 0, n: 0, last: 0, el: null };
+  const vnum = v => (String(v || "").replace(/\D/g, "") + "0000000000000000").slice(0, 16);
+  const appVer = () => { try { return String(ShopAndroid.version() || ""); } catch (e) { return ""; } };
+  const myVer = () => { let w = ""; try { w = String(ShopAndroid.webVersion() || ""); } catch (e) {} const a = appVer(); return vnum(w) > vnum(a) ? w : a; };
+  const canUpd = () => { try { return IS_ANDROID && !DEV && typeof ShopAndroid.webCheck === "function"; } catch (e) { return false; } };
+  function updCheck(force) {
+    if (!canUpd() || UPD.skip || UPD.lock) return;
+    if (!force && Date.now() - UPD.last < 60000) return;
+    UPD.last = Date.now();
+    fetch(UPD.url + "?t=" + Math.floor(Date.now() / 60000), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
+      if (!j || !j.ver || vnum(j.ver) <= vnum(myVer())) return;
+      if (vnum(j.minApp) > vnum(appVer())) return;   // ชุดนี้ต้องใช้ไฟล์แอพใหม่กว่า — สลับไม่ได้ ไม่ล็อก
+      UPD.need = j.ver; updTry();
+    }).catch(() => {});
+  }
+  function updTry() {
+    if (!UPD.need || UPD.lock || UPD.skip) return;
+    if (saving || busy || !window.appIdle()) { setTimeout(updTry, 3000); return; }   // หน้าต่างเปิด/กำลังพิมพ์/บันทึก = รอก่อน
+    UPD.lock = true; UPD.t0 = Date.now(); UPD.n = 0;
+    if (!UPD.el) {
+      UPD.el = document.createElement("div");
+      UPD.el.style.cssText = "position:fixed;inset:0;z-index:99;background:#f4f4f2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;font-family:inherit";
+      UPD.el.innerHTML = '<style>@keyframes pxsp{to{transform:rotate(360deg)}}</style>'
+        + '<div style="width:44px;height:44px;border-radius:50%;border:4px solid #e3e6e3;border-top-color:#2e7d32;animation:pxsp 1s linear infinite"></div>'
+        + '<b style="font-size:20px">⬇️ มีแอพรุ่นใหม่</b><div id="pxUpdTx" style="color:#6b7280;font-size:15px;line-height:1.6">กำลังอัปเดต… รอสักครู่</div>'
+        + '<button id="pxUpdSkip" style="display:none;margin-top:14px;height:44px;padding:0 18px;border-radius:12px;border:1px solid #d7dbd7;background:#fff;color:#6b7280;font:inherit;font-size:15px">ใช้รุ่นเดิมไปก่อน</button>';
+      document.body.appendChild(UPD.el);
+      UPD.el.querySelector("#pxUpdSkip").onclick = () => { UPD.skip = true; UPD.lock = false; UPD.el.style.display = "none"; toast("ใช้รุ่นเดิมไปก่อน — ปิดแอพแล้วเปิดใหม่ตอนมีเน็ต จะอัปเดตเอง", 4000); };
+    }
+    UPD.el.style.display = "flex"; UPD.el.querySelector("#pxUpdSkip").style.display = "none"; UPD.el.querySelector("#pxUpdTx").textContent = "กำลังอัปเดต… รอสักครู่";
+    updStep();
+  }
+  function updStep() {
+    if (!UPD.lock) return;
+    const k = UPD.n++;
+    if (Date.now() - UPD.t0 > 180000) { UPD.el.querySelector("#pxUpdTx").textContent = "📶 อัปเดตไม่ได้ — เช็คอินเทอร์เน็ต แล้วรอสักครู่"; UPD.el.querySelector("#pxUpdSkip").style.display = ""; }
+    // ตัวแอพโหลด+ตรวจชุดใหม่ แล้วโหลดหน้าใหม่เอง (หน้าว่างแล้ว) — เรียกห่าง ๆ (เรียกถี่ = ขึ้นข้อความซ้ำ)
+    if ([0, 2, 5, 9].indexOf(k) >= 0 || (k > 9 && k % 8 === 0)) { try { ShopAndroid.webCheck(); } catch (e) {} }
+    setTimeout(updStep, 4000);
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) updCheck(false); });
+  setInterval(() => updCheck(true), 10 * 60000);
+  setTimeout(() => updCheck(true), 2500);
 
   /* ---------- เริ่ม ---------- */
   // Android: ลิงก์ตามตัวแอพเสมอ (อัปเดตแอพแล้วลิงก์เปลี่ยนตาม · ลิงก์เปลี่ยน = ข้อมูลเดิมใช้ไม่ได้)
