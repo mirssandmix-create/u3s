@@ -838,7 +838,9 @@
   }
   function updTry() {
     if (!UPD.need || UPD.lock || UPD.skip) return;
-    if (saving || busy || !window.appIdle()) { setTimeout(updTry, 3000); return; }   // หน้าต่างเปิด/กำลังพิมพ์/บันทึก = รอก่อน
+    if (saving || busy || $("sheet") || $("zoomV")) { setTimeout(updTry, 3000); return; }   // หน้าต่างเปิด/กำลังบันทึก/ดึง = รอก่อน
+    // ช่องที่ยังมีเคอร์เซอร์ค้าง (appIdle = ไม่ว่าง → ตัวแอพไม่ยอมสลับหน้า) = เอาเคอร์เซอร์ออก · ราคาที่พิมพ์จำในเครื่องแล้ว ไม่หาย
+    try { if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); } catch (e) {}
     UPD.lock = true; UPD.t0 = Date.now(); UPD.n = 0;
     if (!UPD.el) {
       UPD.el = document.createElement("div");
